@@ -17,4 +17,4 @@ This is just a simple logger, usage is also simple.
     ns_log::fatal << "this is a 'fatal' message." << ns_log::endl;
 ```
 ## Display
-<img src="./img/output.png" width="50%">
+<img src="./img/output.png">
