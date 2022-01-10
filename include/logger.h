@@ -6,6 +6,28 @@
 
 namespace ns_log
 {
+    enum class LogType;
+    
+    class Logger
+    {
+    private:
+        const LogType _logType;
+        const std::string _prefix;
+
+        public :
+            Logger(const LogType &logType, const std::string &prefix) : _logType(logType),
+        _prefix(prefix){}
+
+        Logger() = delete;
+        Logger(const Logger &) = delete;
+
+        public :
+            const LogType & logType() const {return this->_logType;}
+
+    const std::string &prefix() const { return this->_prefix; }
+    };
+
+#pragma region params
 
     enum class LogType
     {
@@ -21,25 +43,6 @@ namespace ns_log
                                                             std::make_pair(LogType::ERROR, "[ error ] "),
                                                             std::make_pair(LogType::FATAL, "[ fatal ] ")});
 
-    class Logger
-    {
-    private:
-        const LogType _logType;
-        const std::string _prefix;
-
-    public:
-        Logger(const LogType &logType, const std::string &prefix)
-            : _logType(logType), _prefix(prefix) {}
-
-        Logger() = delete;
-        Logger(const Logger &) = delete;
-
-    public:
-        const LogType &logType() const { return this->_logType; }
-
-        const std::string &prefix() const { return this->_prefix; }
-    };
-
     static std::ostream *loggerOS = &std::cout;
 
     static const Logger info(LogType::INFO, "\033[32m");
@@ -53,17 +56,21 @@ namespace ns_log
 
     void setLoggerOS(std::ostream &os) { loggerOS = &os; }
 
+#pragma endregion
+
     template <typename _Ty>
     const Logger &operator<<(const Logger &logger, const _Ty &msg)
     {
-        *(loggerOS) << logger.prefix();
+        if (loggerOS == &std::cout)
+            *(loggerOS) << logger.prefix();
 
         if (logger.logType() != curLogType)
             *(loggerOS) << logMap.at(logger.logType()), curLogType = logger.logType();
 
         *(loggerOS) << msg;
-        
-        *(loggerOS) << "\033[37m";
+
+        if (loggerOS == &std::cout)
+            *(loggerOS) << "\033[37m";
 
         return logger;
     }
