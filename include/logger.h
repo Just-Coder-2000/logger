@@ -7,24 +7,29 @@
 namespace ns_log
 {
     enum class LogType;
-    
+
+    enum class ColorType;
+
     class Logger
     {
     private:
         const LogType _logType;
-        const std::string _prefix;
+        const ColorType _descColor;
+        const ColorType _msgColor;
 
-        public :
-            Logger(const LogType &logType, const std::string &prefix) : _logType(logType),
-        _prefix(prefix){}
+    public:
+        Logger(const LogType &logType, const ColorType &descColor, const ColorType &msgColor)
+            : _logType(logType), _descColor(descColor), _msgColor(msgColor) {}
 
         Logger() = delete;
         Logger(const Logger &) = delete;
 
-        public :
-            const LogType & logType() const {return this->_logType;}
+    public:
+        const LogType &logType() const { return this->_logType; }
 
-    const std::string &prefix() const { return this->_prefix; }
+        const ColorType &descColor() const { return this->_descColor; }
+
+        const ColorType &msgColor() const { return this->_msgColor; }
     };
 
 #pragma region params
@@ -32,23 +37,75 @@ namespace ns_log
     enum class LogType
     {
         INIT,
+        PROCESS,
         INFO,
         WARNING,
         ERROR,
         FATAL
     };
 
-    static std::unordered_map<LogType, std::string> logMap({std::make_pair(LogType::INFO, "[ info  ] "),
-                                                            std::make_pair(LogType::WARNING, "[warning] "),
-                                                            std::make_pair(LogType::ERROR, "[ error ] "),
-                                                            std::make_pair(LogType::FATAL, "[ fatal ] ")});
+    /**
+     * @brief 
+     * @return std::unordered_map<LogType, std::string> 
+     */
+    static const std::unordered_map<LogType, std::string> descMap({std::make_pair(LogType::PROCESS, "[process] "),
+                                                                   std::make_pair(LogType::INFO, "[ info  ] "),
+                                                                   std::make_pair(LogType::WARNING, "[warning] "),
+                                                                   std::make_pair(LogType::ERROR, "[ error ] "),
+                                                                   std::make_pair(LogType::FATAL, "[ fatal ] ")});
+
+    enum class ColorType
+    {
+        NONE,
+        B_NONE,
+        BLACK,
+        B_BLACK,
+        RED,
+        B_RED,
+        GREEN,
+        B_GREEN,
+        BROWN,
+        B_BROWN,
+        YELLOW,
+        B_YELLOW,
+        BLUE,
+        B_BLUE,
+        PURPLE,
+        B_PURPLE,
+        CYAN,
+        B_CYAN,
+        GRAY,
+        WHITE,
+    };
+
+    static const std::unordered_map<ColorType, std::string> colorMap({std::make_pair(ColorType::NONE, "\e[0m"),
+                                                                      std::make_pair(ColorType::B_NONE, "\e[1m"),
+                                                                      std::make_pair(ColorType::BLACK, "\e[0;30m"),
+                                                                      std::make_pair(ColorType::B_BLACK, "\e[1;30m"),
+                                                                      std::make_pair(ColorType::RED, "\e[0;31m"),
+                                                                      std::make_pair(ColorType::B_RED, "\e[1;31m"),
+                                                                      std::make_pair(ColorType::GREEN, "\e[0;32m"),
+                                                                      std::make_pair(ColorType::B_GREEN, "\e[1;32m"),
+                                                                      std::make_pair(ColorType::BROWN, "\e[0;33m"),
+                                                                      std::make_pair(ColorType::B_BROWN, "\e[1;33m"),
+                                                                      std::make_pair(ColorType::YELLOW, "\e[0;33m"),
+                                                                      std::make_pair(ColorType::B_YELLOW, "\e[1;33m"),
+                                                                      std::make_pair(ColorType::BLUE, "\e[0;34m"),
+                                                                      std::make_pair(ColorType::B_BLUE, "\e[1;34m"),
+                                                                      std::make_pair(ColorType::PURPLE, "\e[0;35m"),
+                                                                      std::make_pair(ColorType::B_PURPLE, "\e[1;35m"),
+                                                                      std::make_pair(ColorType::CYAN, "\e[0;36m"),
+                                                                      std::make_pair(ColorType::B_CYAN, "\e[1;36m"),
+                                                                      std::make_pair(ColorType::GRAY, "\e[0;37m"),
+                                                                      std::make_pair(ColorType::WHITE, "\e[1;37m")});
 
     static std::ostream *loggerOS = &std::cout;
 
-    static const Logger info(LogType::INFO, "\033[32m");
-    static const Logger warning(LogType::WARNING, "\033[33m");
-    static const Logger error(LogType::ERROR, "\033[31m");
-    static const Logger fatal(LogType::FATAL, "\033[35m");
+    static const Logger process(LogType::PROCESS, ColorType::B_NONE, ColorType::NONE);
+    static const Logger info(LogType::INFO, ColorType::B_GREEN, ColorType::GREEN);
+    static const Logger warning(LogType::WARNING, ColorType::B_YELLOW, ColorType::YELLOW);
+    static const Logger error(LogType::ERROR, ColorType::B_RED, ColorType::RED);
+    static const Logger fatal(LogType::FATAL, ColorType::B_PURPLE, ColorType::PURPLE);
 
     static LogType curLogType = LogType::INIT;
 
@@ -62,15 +119,18 @@ namespace ns_log
     const Logger &operator<<(const Logger &logger, const _Ty &msg)
     {
         if (loggerOS == &std::cout)
-            *(loggerOS) << logger.prefix();
+            *(loggerOS) << colorMap.at(logger.descColor());
 
         if (logger.logType() != curLogType)
-            *(loggerOS) << logMap.at(logger.logType()), curLogType = logger.logType();
+            *(loggerOS) << descMap.at(logger.logType()), curLogType = logger.logType();
+
+        if (loggerOS == &std::cout)
+            *(loggerOS) << colorMap.at(logger.msgColor());
 
         *(loggerOS) << msg;
 
         if (loggerOS == &std::cout)
-            *(loggerOS) << "\033[37m";
+            *(loggerOS) << colorMap.at(ColorType::NONE);
 
         return logger;
     }
