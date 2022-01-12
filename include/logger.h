@@ -3,6 +3,8 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <ctime>
+#include <tuple>
 
 namespace ns_log
 {
@@ -101,17 +103,28 @@ namespace ns_log
 
     static std::ostream *loggerOS = &std::cout;
 
+    static const char endl = '\n';
+
+    static LogType curLogType = LogType::INIT;
+
+    static bool printTime = true;
+
     static const Logger process(LogType::PROCESS, ColorType::B_NONE, ColorType::NONE);
     static const Logger info(LogType::INFO, ColorType::B_GREEN, ColorType::GREEN);
     static const Logger warning(LogType::WARNING, ColorType::B_YELLOW, ColorType::YELLOW);
     static const Logger error(LogType::ERROR, ColorType::B_RED, ColorType::RED);
     static const Logger fatal(LogType::FATAL, ColorType::B_PURPLE, ColorType::PURPLE);
 
-    static LogType curLogType = LogType::INIT;
+    static void setOstream(std::ostream &os) { loggerOS = &os; }
 
-    static const char endl = '\n';
+    static void setPrintTime(bool printTime) { ns_log::printTime = printTime; }
 
-    void setLoggerOS(std::ostream &os) { loggerOS = &os; }
+    static std::tuple<uint, uint, uint> curTime()
+    {
+        time_t now = time(0);
+        tm *ltm = localtime(&now);
+        return {ltm->tm_hour, ltm->tm_min, ltm->tm_sec};
+    }
 
 #pragma endregion
 
@@ -122,7 +135,15 @@ namespace ns_log
             *(loggerOS) << colorMap.at(logger.descColor());
 
         if (logger.logType() != curLogType)
-            *(loggerOS) << descMap.at(logger.logType()), curLogType = logger.logType();
+        {
+            *(loggerOS) << descMap.at(logger.logType());
+            curLogType = logger.logType();
+            if (printTime)
+            {
+                auto [h, m, s] = curTime();
+                *(loggerOS) << '[' << h << ':' << m << ':' << s << "] ";
+            }
+        }
 
         if (loggerOS == &std::cout)
             *(loggerOS) << colorMap.at(logger.msgColor());
