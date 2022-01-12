@@ -156,4 +156,12 @@ namespace ns_log
         return logger;
     }
 
+    const Logger &operator<<(const Logger &logger, const char c)
+    {
+        if (c == '\n')
+            curLogType = LogType::INIT;
+        *(loggerOS) << c;
+        return logger;
+    }
+
 } // namespace ns_log
