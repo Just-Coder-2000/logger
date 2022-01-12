@@ -1,5 +1,5 @@
-[process] [19:56:32] this is a 'process' message.
-[ info  ] [19:56:32] this is a 'info' message. Pi = 3.14
-[warning] [19:56:32] this is a 'warning' message. E = 2.71
-[ error ] [19:56:32] this is a 'error' message.
-[ fatal ] [19:56:32] this is a 'fatal' message.
+[process] [20:17:36] this is a 'process' message.
+[ info  ] [20:17:36] this is a 'info' message. Pi = 3.14
+[warning] [20:17:36] this is a 'warning' message. E = 2.71
+[ error ] [20:17:36] this is a 'error' message.
+[ fatal ] [20:17:36] this is a 'fatal' message.

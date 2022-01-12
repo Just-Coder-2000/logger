@@ -127,7 +127,7 @@ namespace ns_log
     }
 
 #pragma endregion
-
+#ifdef __linux__
     template <typename _Ty>
     const Logger &operator<<(const Logger &logger, const _Ty &msg)
     {
@@ -155,6 +155,27 @@ namespace ns_log
 
         return logger;
     }
+
+#else
+    template <typename _Ty>
+    const Logger &operator<<(const Logger &logger, const _Ty &msg)
+    {
+        if (logger.logType() != curLogType)
+        {
+            *(loggerOS) << descMap.at(logger.logType());
+            curLogType = logger.logType();
+            if (printTime)
+            {
+                auto [h, m, s] = curTime();
+                *(loggerOS) << '[' << h << ':' << m << ':' << s << "] ";
+            }
+        }
+
+        *(loggerOS) << msg;
+
+        return logger;
+    }
+#endif
 
     const Logger &operator<<(const Logger &logger, const char c)
     {
