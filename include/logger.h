@@ -34,6 +34,10 @@ namespace ns_log
         const ColorType &msgColor() const { return this->_msgColor; }
     };
 
+    struct _Endl
+    {
+    };
+    static const _Endl endl;
 #pragma region params
 
     enum class LogType
@@ -80,6 +84,7 @@ namespace ns_log
         WHITE,
     };
 
+#ifdef __linux__
     static const std::unordered_map<ColorType, std::string> colorMap({std::make_pair(ColorType::NONE, "\e[0m"),
                                                                       std::make_pair(ColorType::B_NONE, "\e[1m"),
                                                                       std::make_pair(ColorType::BLACK, "\e[0;30m"),
@@ -100,10 +105,9 @@ namespace ns_log
                                                                       std::make_pair(ColorType::B_CYAN, "\e[1;36m"),
                                                                       std::make_pair(ColorType::GRAY, "\e[0;37m"),
                                                                       std::make_pair(ColorType::WHITE, "\e[1;37m")});
+#endif
 
     static std::ostream *loggerOS = &std::cout;
-
-    static const char endl = '\n';
 
     static LogType curLogType = LogType::INIT;
 
@@ -127,6 +131,7 @@ namespace ns_log
     }
 
 #pragma endregion
+
 #ifdef __linux__
     template <typename _Ty>
     const Logger &operator<<(const Logger &logger, const _Ty &msg)
@@ -177,11 +182,9 @@ namespace ns_log
     }
 #endif
 
-    const Logger &operator<<(const Logger &logger, const char c)
+    const Logger &operator<<(const Logger &logger, const _Endl e)
     {
-        if (c == '\n')
-            curLogType = LogType::INIT;
-        *(loggerOS) << c;
+        curLogType = LogType::INIT, *(loggerOS) << '\n';
         return logger;
     }
 
