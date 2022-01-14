@@ -182,7 +182,7 @@ namespace ns_log
     }
 #endif
 
-    const Logger &operator<<(const Logger &logger, const _Endl e)
+    static const Logger &operator<<(const Logger &logger, const _Endl e)
     {
         curLogType = LogType::INIT, *(loggerOS) << '\n';
         return logger;

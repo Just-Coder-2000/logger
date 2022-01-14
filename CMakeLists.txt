@@ -9,3 +9,9 @@ set(CMAKE_BUILD_TYPE "Release")
 include_directories(./include)
 
 add_executable(${PROJECT_NAME} ./main.cpp)
+
+# install
+
+set(CMAKE_INSTALL_PREFIX /usr/local)
+
+install(FILES ${CMAKE_SOURCE_DIR}/include/logger.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include/logger)
