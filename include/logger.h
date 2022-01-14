@@ -43,8 +43,8 @@ namespace ns_log
     enum class LogType
     {
         INIT,
-        PROCESS,
         INFO,
+        PROCESS,
         WARNING,
         ERROR,
         FATAL
@@ -54,8 +54,8 @@ namespace ns_log
      * @brief 
      * @return std::unordered_map<LogType, std::string> 
      */
-    static const std::unordered_map<LogType, std::string> descMap({std::make_pair(LogType::PROCESS, "[process] "),
-                                                                   std::make_pair(LogType::INFO, "[ info  ] "),
+    static const std::unordered_map<LogType, std::string> descMap({std::make_pair(LogType::INFO, "[ info  ] "),
+                                                                   std::make_pair(LogType::PROCESS, "[process] "),
                                                                    std::make_pair(LogType::WARNING, "[warning] "),
                                                                    std::make_pair(LogType::ERROR, "[ error ] "),
                                                                    std::make_pair(LogType::FATAL, "[ fatal ] ")});
@@ -113,8 +113,8 @@ namespace ns_log
 
     static bool printTime = true;
 
-    static const Logger process(LogType::PROCESS, ColorType::B_NONE, ColorType::NONE);
-    static const Logger info(LogType::INFO, ColorType::B_GREEN, ColorType::GREEN);
+    static const Logger info(LogType::INFO, ColorType::B_NONE, ColorType::NONE);
+    static const Logger process(LogType::PROCESS, ColorType::B_GREEN, ColorType::GREEN);
     static const Logger warning(LogType::WARNING, ColorType::B_YELLOW, ColorType::YELLOW);
     static const Logger error(LogType::ERROR, ColorType::B_RED, ColorType::RED);
     static const Logger fatal(LogType::FATAL, ColorType::B_PURPLE, ColorType::PURPLE);
