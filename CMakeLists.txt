@@ -14,4 +14,4 @@ add_executable(${PROJECT_NAME} ./main.cpp)
 
 set(CMAKE_INSTALL_PREFIX /usr/local)
 
-install(FILES ${CMAKE_SOURCE_DIR}/include/logger.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include/logger)
+install(FILES ${CMAKE_SOURCE_DIR}/include/logger.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include/artwork/logger)
