@@ -1,4 +1,12 @@
 #pragma once
+/**
+ * @file logger.h
+ * @author csl (3079625093@qq.com)
+ * @version 0.1
+ * @date 2022-01-22
+ * 
+ * @copyright Copyright (c) 2022
+ */
 
 #include <iostream>
 #include <string>
@@ -8,6 +16,7 @@
 
 namespace ns_log
 {
+
     enum class LogType;
 
     enum class ColorType;
@@ -187,5 +196,206 @@ namespace ns_log
         curLogType = LogType::INIT, *(loggerOS) << '\n';
         return logger;
     }
+
+#pragma region macro
+
+#pragma region process
+    void __print__process()
+    {
+        return;
+    }
+
+    template <typename ArgvType>
+    void __print__process(const ArgvType &argv)
+    {
+        ns_log::process << argv;
+        return;
+    }
+
+    template <typename ArgvType, typename... ElseType>
+    void __print__process(const ArgvType &argv, const ElseType &...argvs)
+    {
+        ns_log::process << argv;
+        return __print__process(argvs...);
+    }
+
+#define PROCESS(...)                       \
+    ns_log::__print__process(__VA_ARGS__); \
+    ns_log::process << (ns_log::endl);
+#define PROCESS_BEG(...)                   \
+    ns_log::__print__process(__VA_ARGS__); \
+    ns_log::process << ('\n');
+#define PROCESS_OUT(...)                   \
+    ns_log::__print__process(__VA_ARGS__); \
+    ns_log::process << ('\n');
+#define PROCESS_END(...)                   \
+    ns_log::__print__process(__VA_ARGS__); \
+    ns_log::process << ns_log::endl;
+#pragma endregion
+
+#pragma region info
+    void __print__info()
+    {
+        return;
+    }
+
+    template <typename ArgvType>
+    void __print__info(const ArgvType &argv)
+    {
+        ns_log::info << argv;
+        return;
+    }
+
+    template <typename ArgvType, typename... ElseType>
+    void __print__info(const ArgvType &argv, const ElseType &...argvs)
+    {
+        ns_log::info << argv;
+        return __print__info(argvs...);
+    }
+
+#define INFO(...)                       \
+    ns_log::__print__info(__VA_ARGS__); \
+    ns_log::info << (ns_log::endl);
+#define INFO_BEG(...)                   \
+    ns_log::__print__info(__VA_ARGS__); \
+    ns_log::info << ('\n');
+#define INFO_OUT(...)                   \
+    ns_log::__print__info(__VA_ARGS__); \
+    ns_log::info << ('\n');
+#define INFO_END(...)                   \
+    ns_log::__print__info(__VA_ARGS__); \
+    ns_log::info << ns_log::endl;
+#pragma endregion
+
+#pragma region error
+    void __print__error()
+    {
+        return;
+    }
+
+    template <typename ArgvType>
+    void __print__error(const ArgvType &argv)
+    {
+        ns_log::error << argv;
+        return;
+    }
+
+    template <typename ArgvType, typename... ElseType>
+    void __print__error(const ArgvType &argv, const ElseType &...argvs)
+    {
+        ns_log::error << argv;
+        return __print__error(argvs...);
+    }
+
+#define ERROR(...)                       \
+    ns_log::__print__error(__VA_ARGS__); \
+    ns_log::error << (ns_log::endl);
+#define ERROR_BEG(...)                   \
+    ns_log::__print__error(__VA_ARGS__); \
+    ns_log::error << ('\n');
+#define ERROR_OUT(...)                   \
+    ns_log::__print__error(__VA_ARGS__); \
+    ns_log::error << ('\n');
+#define ERROR_END(...)                   \
+    ns_log::__print__error(__VA_ARGS__); \
+    ns_log::error << ns_log::endl;
+#pragma endregion
+
+#pragma region fatal
+    void __print__fatal()
+    {
+        return;
+    }
+
+    template <typename ArgvType>
+    void __print__fatal(const ArgvType &argv)
+    {
+        ns_log::fatal << argv;
+        return;
+    }
+
+    template <typename ArgvType, typename... ElseType>
+    void __print__fatal(const ArgvType &argv, const ElseType &...argvs)
+    {
+        ns_log::fatal << argv;
+        return __print__fatal(argvs...);
+    }
+
+#define FATAL(...)                       \
+    ns_log::__print__fatal(__VA_ARGS__); \
+    ns_log::fatal << (ns_log::endl);
+#define FATAL_BEG(...)                   \
+    ns_log::__print__fatal(__VA_ARGS__); \
+    ns_log::fatal << ('\n');
+#define FATAL_OUT(...)                   \
+    ns_log::__print__fatal(__VA_ARGS__); \
+    ns_log::fatal << ('\n');
+#define FATAL_END(...)                   \
+    ns_log::__print__fatal(__VA_ARGS__); \
+    ns_log::fatal << ns_log::endl;
+#pragma endregion
+
+#pragma region warning
+    void __print__warning()
+    {
+        return;
+    }
+
+    template <typename ArgvType>
+    void __print__warning(const ArgvType &argv)
+    {
+        ns_log::warning << argv;
+        return;
+    }
+
+    template <typename ArgvType, typename... ElseType>
+    void __print__warning(const ArgvType &argv, const ElseType &...argvs)
+    {
+        ns_log::warning << argv;
+        return __print__warning(argvs...);
+    }
+
+#define WARNING(...)                       \
+    ns_log::__print__warning(__VA_ARGS__); \
+    ns_log::warning << (ns_log::endl);
+#define WARNING_BEG(...)                   \
+    ns_log::__print__warning(__VA_ARGS__); \
+    ns_log::warning << ('\n');
+#define WARNING_OUT(...)                   \
+    ns_log::__print__warning(__VA_ARGS__); \
+    ns_log::warning << ('\n');
+#define WARNING_END(...)                   \
+    ns_log::__print__warning(__VA_ARGS__); \
+    ns_log::warning << ns_log::endl;
+#pragma endregion
+
+#pragma region plaintext
+
+    void __print__()
+    {
+        return;
+    }
+
+    template <typename ArgvType>
+    void __print__(const ArgvType &argv)
+    {
+        *(ns_log::loggerOS) << argv;
+        return;
+    }
+
+    template <typename ArgvType, typename... ElseType>
+    void __print__(const ArgvType &argv, const ElseType &...argvs)
+    {
+        *(ns_log::loggerOS) << argv;
+        return __print__(argvs...);
+    }
+
+#define PLAINTEXT(...)              \
+    ns_log::__print__(__VA_ARGS__); \
+    *(ns_log::loggerOS) << '\n';
+
+#pragma endregion
+
+#pragma endregion
 
 } // namespace ns_log

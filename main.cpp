@@ -3,43 +3,59 @@
 
 int main(int argc, char const *argv[])
 {
-/**
-     * @brief 
-     * apis that you can use:
+    /**
+     * @brief macro
+     * @attention ostream without [_BEG | _OUT | _END] will output the symbal and time each time with a endl.
+     * @attention ostreams with [_BEG | _OUT _END] can be use at the same time.
      * 
-     * [0] ns_log::info
-     * [1] ns_log::process
-     * [2] ns_log::warning
-     * [3] ns_log::error
-     * [4] ns_log::fatal
+     * [1] INFO INFO_BEG INFO_OUT INFO_END
+     * [2] PROCESS PROCESS_BEG PROCESS_OUT PROCESS_END
+     * [3] WARNING WARNING_BEG WARNING_OUT WARNING_END
+     * [4] ERROR ERROR_BEG ERROR_OUT ERROR_END
+     * [5] FATAL FATAL_BEG FATAL_OUT FATAL_END
      * 
-     * [5] ns_log::endl
-     * 
-     * [6] ns_log::setOstream()
-     * [7] ns_log::setPrintTime()
-     * 
-     * usages : Logger << messages << ... << ns_log::endl;
+     * @attention just output context like [std::cout | std::ostream]
+     * [6] PLAINTEXT
      */
 
-    // for std::cout
-    ns_log::info << "this is a 'info' message. Pi = " << 3.14f << ns_log::endl;
-    ns_log::process << "this is a 'process' message." << ns_log::endl;
-    ns_log::process << "this is a 'process' message." << ns_log::endl;
-    ns_log::warning << "this is a 'warning' message. E = " << 2.71f << ns_log::endl;
-    ns_log::error << "this is a 'error' message." << ns_log::endl;
-    ns_log::error << "this is a 'error' message." << ns_log::endl;
-    ns_log::fatal << "this is a 'fatal' message." << ns_log::endl;
+    /**
+     * @brief log for std::cout
+     */
+    ns_log::setOstream(std::cout);
+    WARNING_BEG("Here, I want to say something:");
+    WARNING_OUT("[1] No pains, no gains.");
+    WARNING_OUT("[2] A friend in need is a friend indeed.");
+    WARNING_OUT("[3] Cpp is the best programing language.");
+    WARNING_END("well, I finished.");
 
-    // for std::ofstream
-    std::fstream file("../log.log", std::ios::out);
-    ns_log::setOstream(file);
-    ns_log::info << "this is a 'info' message. Pi = " << 3.14f << ns_log::endl;
-    ns_log::process << "this is a 'process' message." << ns_log::endl;
-    ns_log::warning << "this is a 'warning' message. E = " << 2.71f << ns_log::endl;
-    ns_log::error << "this is a 'error' message." << ns_log::endl;
-    ns_log::fatal << "this is a 'fatal' message." << ns_log::endl;
+    PROCESS("to open the file 'nofile.txt'");
+    std::ifstream file("nofile.txt");
+    if (!file.is_open())
+    {
+        ERROR("the file 'nofile.txt' open faild.");
+        PLAINTEXT("maybe the file is miss or the filename is wrong.");
+    }
+    FATAL("this is a fatal message.");
+    INFO("this is a info message.");
 
-    file.close();
+    /**
+     * @brief log for std::ofstream
+     */
+    std::ofstream ofs("../log.log");
+    ns_log::setOstream(ofs);
+    WARNING_BEG("Here, I want to say something:");
+    WARNING_OUT("[1] No pains, no gains.");
+    WARNING_OUT("[2] A friend in need is a friend indeed.");
+    WARNING_OUT("[3] Cpp is the best programing language.");
+    WARNING_END("well, I finished.");
 
+    PROCESS("to open the file 'nofile.txt'");
+    if (!file.is_open())
+    {
+        ERROR("the file 'nofile.txt' open faild.");
+        PLAINTEXT("maybe the file is miss or the filename is wrong.");
+    }
+    FATAL("this is a fatal message.");
+    INFO("this is a info message.");
     return 0;
 }
