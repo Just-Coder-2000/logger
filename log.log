@@ -1,5 +1,10 @@
-[process] [14:5:50] this is a 'process' message.
-[ info  ] [14:5:50] this is a 'info' message. Pi = 3.14
-[warning] [14:5:50] this is a 'warning' message. E = 2.71
-[ error ] [14:5:50] this is a 'error' message.
-[ fatal ] [14:5:50] this is a 'fatal' message.
+[warning] [17:55:46] Here, I want to say something:
+[1] No pains, no gains.
+[2] A friend in need is a friend indeed.
+[3] Cpp is the best programing language.
+well, I finished.
+[process] [17:55:46] to open the file 'nofile.txt'
+[ error ] [17:55:46] the file 'nofile.txt' open faild.
+maybe the file is miss or the filename is wrong.
+[ fatal ] [17:55:46] this is a fatal message.
+[ info  ] [17:55:46] this is a info message.
