@@ -37,6 +37,8 @@ int main(int argc, char const *argv[])
     }
     FATAL("this is a fatal message.");
     INFO("this is a info message.");
+    std::vector<uint> vec{0, 1, 2, 3};
+    INFO("this is a vector: ", vec);
 
     /**
      * @brief log for std::ofstream
@@ -56,6 +58,6 @@ int main(int argc, char const *argv[])
         PLAINTEXT("maybe the file is miss or the filename is wrong.");
     }
     FATAL("this is a fatal message.");
-    INFO("this is a info message.");
+    INFO("this is a vector: ", vec);
     return 0;
 }

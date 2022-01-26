@@ -7,15 +7,211 @@
  * 
  * @copyright Copyright (c) 2022
  */
-
 #include <iostream>
 #include <string>
-#include <unordered_map>
 #include <ctime>
-#include <tuple>
+
+#include <unordered_map>
+#include <map>
+
+#include <unordered_set>
+#include <set>
+
+#include <string>
+#include <vector>
+#include <list>
+#include <deque>
+#include <array>
 
 namespace ns_log
 {
+
+    /**
+     * @brief output format for containers in the STL
+     * [1] std::pair
+     * [2] std::map std::multimap std::unordered_map std::unordered_multimap
+     * [3] std::set std::multiset std::unordered_set std::unordered_multiset
+     * [4] std::vector std::list std::deque std::array
+     * [5] struct
+     */
+
+#pragma region output for container
+
+    /**
+     * @brief params to control
+     * @param splitor the splitor to split the elements
+     * @param firName the describe name for the first element of the std::pair
+     * @param sedName the describe name for the second element of the std::pair
+     */
+    static std::string splitor(", ");
+    static std::string firName("fir");
+    static std::string sedName("sed");
+
+    /**
+     * @brief Set the splitor
+     */
+    static void setSplitor(const std::string &sp)
+    {
+        splitor = sp;
+    }
+
+    /**
+     * @brief Set the firName and sedName
+     */
+    static void setFirSedName(const std::string &firstName, const std::string &secondName)
+    {
+        firName = firstName, sedName = secondName;
+    }
+
+    /**
+     * @brief overload the operator '<<' for std::pair
+     */
+    template <typename Key, typename Val>
+    std::ostream &operator<<(std::ostream &os, const std::pair<Key, Val> &p)
+    {
+        os << "{'" + firName + "': " << p.first << ", '" + sedName + "': " << p.second << '}';
+        return os;
+    }
+
+    /**
+     * @brief output format for container
+     */
+    template <typename ConType>
+    std::ostream &outputCon(std::ostream &os, const ConType &s)
+    {
+        os << '[';
+        auto iter = s.cbegin();
+        for (; iter != (--s.cend()); ++iter)
+            os << *iter << splitor;
+        os << *iter << ']';
+        return os;
+    }
+
+#pragma endregion
+
+#pragma region map
+
+    /**
+     * @brief overload the operator '<<' for std::map
+     */
+    template <typename Key, typename Val>
+    std::ostream &operator<<(std::ostream &os, const std::map<Key, Val> &m)
+    {
+        return outputCon(os, m);
+    }
+
+    /**
+     * @brief overload the operator '<<' for std::multimap
+     */
+    template <typename Key, typename Val>
+    std::ostream &operator<<(std::ostream &os, const std::multimap<Key, Val> &m)
+    {
+        return outputCon(os, m);
+    }
+
+    /**
+     * @brief overload the operator '<<' for std::unordered_map
+     */
+    template <typename Key, typename Val>
+    std::ostream &operator<<(std::ostream &os, const std::unordered_map<Key, Val> &m)
+    {
+        return outputCon(os, m);
+    }
+
+    /**
+     * @brief overload the operator '<<' for std::unordered_multimap
+     */
+    template <typename Key, typename Val>
+    std::ostream &operator<<(std::ostream &os, const std::unordered_multimap<Key, Val> &m)
+    {
+        return outputCon(os, m);
+    }
+
+#pragma endregion
+
+#pragma region set
+
+    /**
+     * @brief overload the operator '<<' for std::set
+     */
+    template <typename Val>
+    std::ostream &operator<<(std::ostream &os, const std::set<Val> &s)
+    {
+        return outputCon(os, s);
+    }
+
+    /**
+     * @brief overload the operator '<<' for std::unordered_set
+     */
+    template <typename Val>
+    std::ostream &operator<<(std::ostream &os, const std::unordered_set<Val> &s)
+    {
+        return outputCon(os, s);
+    }
+
+    /**
+     * @brief overload the operator '<<' for std::multiset
+     */
+    template <typename Val>
+    std::ostream &operator<<(std::ostream &os, const std::multiset<Val> &s)
+    {
+        return outputCon(os, s);
+    }
+
+    /**
+     * @brief overload the operator '<<' for std::unordered_multiset
+     */
+    template <typename Val>
+    std::ostream &operator<<(std::ostream &os, const std::unordered_multiset<Val> &s)
+    {
+        return outputCon(os, s);
+    }
+
+#pragma endregion
+
+#pragma region seq cons
+
+    /**
+     * @brief overload the operator '<<' for std::vector
+     */
+    template <typename Val>
+    std::ostream &operator<<(std::ostream &os, const std::vector<Val> &s)
+    {
+        return outputCon(os, s);
+    }
+
+    /**
+     * @brief overload the operator '<<' for std::list
+     */
+    template <typename Val>
+    std::ostream &operator<<(std::ostream &os, const std::list<Val> &s)
+    {
+        return outputCon(os, s);
+    }
+
+    /**
+     * @brief overload the operator '<<' for std::deque
+     */
+    template <typename Val>
+    std::ostream &operator<<(std::ostream &os, const std::deque<Val> &s)
+    {
+        return outputCon(os, s);
+    }
+
+    /**
+     * @brief overload the operator '<<' for std::array
+     */
+    template <typename Val, std::size_t Size>
+    std::ostream &operator<<(std::ostream &os, const std::array<Val, Size> &s)
+    {
+        os << '[';
+        for (int i = 0; i != s.size() - 1; ++i)
+            os << s[i] << splitor;
+        os << s.back() << ']';
+        return os;
+    }
+
+#pragma endregion
 
     enum class LogType;
 
@@ -200,7 +396,7 @@ namespace ns_log
 #pragma region macro
 
 #pragma region process
-    void __print__process()
+    static void __print__process()
     {
         return;
     }
@@ -234,7 +430,7 @@ namespace ns_log
 #pragma endregion
 
 #pragma region info
-    void __print__info()
+    static void __print__info()
     {
         return;
     }
@@ -268,7 +464,7 @@ namespace ns_log
 #pragma endregion
 
 #pragma region error
-    void __print__error()
+    static void __print__error()
     {
         return;
     }
@@ -302,7 +498,7 @@ namespace ns_log
 #pragma endregion
 
 #pragma region fatal
-    void __print__fatal()
+    static void __print__fatal()
     {
         return;
     }
@@ -336,7 +532,7 @@ namespace ns_log
 #pragma endregion
 
 #pragma region warning
-    void __print__warning()
+    static void __print__warning()
     {
         return;
     }
@@ -371,7 +567,7 @@ namespace ns_log
 
 #pragma region plaintext
 
-    void __print__()
+    static void __print__()
     {
         return;
     }
