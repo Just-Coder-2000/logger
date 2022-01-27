@@ -5,7 +5,7 @@
 
 ## Override
 This is just a simple logger, usage is also simple.
-```txt
+```ABAP
                                         _                             
                                         | | ___   __ _  __ _  ___ _ __ 
                                         | |/ _ \ / _` |/ _` |/ _ \ '__|
