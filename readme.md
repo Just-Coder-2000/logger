@@ -5,7 +5,7 @@
 
 ## Override
 This is just a simple logger, usage is also simple.
-```cpp
+```txt
                                         _                             
                                         | | ___   __ _  __ _  ___ _ __ 
                                         | |/ _ \ / _` |/ _` |/ _ \ '__|
