@@ -23,9 +23,9 @@ This is just a simple logger, usage is also simple.
 |error|Error; Errors; Fallacy;|
 |fatal|Fatal; Catastrophic; Destructive; Cause failure|
 
-|main method|
-|---|
-|void setCurOS(std::ostream &os) set the output stream|
+|main method|describe|
+|---|---|
+|void setCurOS(std::ostream &)| set the output stream|
 
 
 ## Usage
