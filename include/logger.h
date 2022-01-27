@@ -1,597 +1,149 @@
 #pragma once
+
 /**
  * @file logger.h
  * @author csl (3079625093@qq.com)
  * @version 0.1
- * @date 2022-01-22
+ * @date 2022-01-27
  * 
  * @copyright Copyright (c) 2022
  */
+
 #include <iostream>
 #include <string>
-#include <ctime>
-
-#include <unordered_map>
-#include <map>
-
-#include <unordered_set>
-#include <set>
-
-#include <string>
 #include <vector>
-#include <list>
-#include <deque>
-#include <array>
+#include <tuple>
+
+/**
+ * @brief the main message type macroes and methods
+ * 
+ * [1] info    {Information; Message; real-time info Of information; Of messages; Informative}
+ * [2] process {The process of achieving a goal; The development of things, especially the steps of natural change;}
+ * [3] warning {about possible accidents, etc.; a warning, warning, etc about the punishment to be suffered}
+ * [4] error   {Error; Errors; Fallacy;}
+ * [5] fatal   {Fatal; Catastrophic; Destructive; Cause failure}
+ * 
+ * [6] void setCurOS(std::ostream &os) set the output stream
+ * 
+ */
 
 namespace ns_log
 {
-
-    /**
-     * @brief output format for containers in the STL
-     * [1] std::pair
-     * [2] std::map std::multimap std::unordered_map std::unordered_multimap
-     * [3] std::set std::multiset std::unordered_set std::unordered_multiset
-     * [4] std::vector std::list std::deque std::array
-     * [5] struct
-     */
-
-#pragma region output for container
-
-    /**
-     * @brief params to control
-     * @param splitor the splitor to split the elements
-     * @param firName the describe name for the first element of the std::pair
-     * @param sedName the describe name for the second element of the std::pair
-     */
-    static std::string splitor(", ");
-    static std::string firName("fir");
-    static std::string sedName("sed");
-
-    /**
-     * @brief Set the splitor
-     */
-    static void setSplitor(const std::string &sp)
+    namespace ns_priv
     {
-        splitor = sp;
-    }
+        /**
+         * @brief the ostream
+         */
+        static std::ostream *logerOS = &(std::cout);
 
-    /**
-     * @brief Set the firName and sedName
-     */
-    static void setFirSedName(const std::string &firstName, const std::string &secondName)
-    {
-        firName = firstName, sedName = secondName;
-    }
+        /**
+         * @brief Get the current ostream
+         * 
+         * @return std::ostream& 
+         */
+        static std::ostream &getCurOS() { return *(ns_priv::logerOS); }
 
-    /**
-     * @brief overload the operator '<<' for std::pair
-     */
-    template <typename Key, typename Val>
-    std::ostream &operator<<(std::ostream &os, const std::pair<Key, Val> &p)
-    {
-        os << "{'" + firName + "': " << p.first << ", '" + sedName + "': " << p.second << '}';
-        return os;
-    }
-
-    /**
-     * @brief output format for container
-     */
-    template <typename ConType>
-    std::ostream &outputCon(std::ostream &os, const ConType &s)
-    {
-        os << '[';
-        auto iter = s.cbegin();
-        for (; iter != (--s.cend()); ++iter)
-            os << *iter << splitor;
-        os << *iter << ']';
-        return os;
-    }
-
-#pragma endregion
-
-#pragma region map
-
-    /**
-     * @brief overload the operator '<<' for std::map
-     */
-    template <typename Key, typename Val>
-    std::ostream &operator<<(std::ostream &os, const std::map<Key, Val> &m)
-    {
-        return outputCon(os, m);
-    }
-
-    /**
-     * @brief overload the operator '<<' for std::multimap
-     */
-    template <typename Key, typename Val>
-    std::ostream &operator<<(std::ostream &os, const std::multimap<Key, Val> &m)
-    {
-        return outputCon(os, m);
-    }
-
-    /**
-     * @brief overload the operator '<<' for std::unordered_map
-     */
-    template <typename Key, typename Val>
-    std::ostream &operator<<(std::ostream &os, const std::unordered_map<Key, Val> &m)
-    {
-        return outputCon(os, m);
-    }
-
-    /**
-     * @brief overload the operator '<<' for std::unordered_multimap
-     */
-    template <typename Key, typename Val>
-    std::ostream &operator<<(std::ostream &os, const std::unordered_multimap<Key, Val> &m)
-    {
-        return outputCon(os, m);
-    }
-
-#pragma endregion
-
-#pragma region set
-
-    /**
-     * @brief overload the operator '<<' for std::set
-     */
-    template <typename Val>
-    std::ostream &operator<<(std::ostream &os, const std::set<Val> &s)
-    {
-        return outputCon(os, s);
-    }
-
-    /**
-     * @brief overload the operator '<<' for std::unordered_set
-     */
-    template <typename Val>
-    std::ostream &operator<<(std::ostream &os, const std::unordered_set<Val> &s)
-    {
-        return outputCon(os, s);
-    }
-
-    /**
-     * @brief overload the operator '<<' for std::multiset
-     */
-    template <typename Val>
-    std::ostream &operator<<(std::ostream &os, const std::multiset<Val> &s)
-    {
-        return outputCon(os, s);
-    }
-
-    /**
-     * @brief overload the operator '<<' for std::unordered_multiset
-     */
-    template <typename Val>
-    std::ostream &operator<<(std::ostream &os, const std::unordered_multiset<Val> &s)
-    {
-        return outputCon(os, s);
-    }
-
-#pragma endregion
-
-#pragma region seq cons
-
-    /**
-     * @brief overload the operator '<<' for std::vector
-     */
-    template <typename Val>
-    std::ostream &operator<<(std::ostream &os, const std::vector<Val> &s)
-    {
-        return outputCon(os, s);
-    }
-
-    /**
-     * @brief overload the operator '<<' for std::list
-     */
-    template <typename Val>
-    std::ostream &operator<<(std::ostream &os, const std::list<Val> &s)
-    {
-        return outputCon(os, s);
-    }
-
-    /**
-     * @brief overload the operator '<<' for std::deque
-     */
-    template <typename Val>
-    std::ostream &operator<<(std::ostream &os, const std::deque<Val> &s)
-    {
-        return outputCon(os, s);
-    }
-
-    /**
-     * @brief overload the operator '<<' for std::array
-     */
-    template <typename Val, std::size_t Size>
-    std::ostream &operator<<(std::ostream &os, const std::array<Val, Size> &s)
-    {
-        os << '[';
-        for (int i = 0; i != s.size() - 1; ++i)
-            os << s[i] << splitor;
-        os << s.back() << ']';
-        return os;
-    }
-
-#pragma endregion
-
-    enum class LogType;
-
-    enum class ColorType;
-
-    class Logger
-    {
-    private:
-        const LogType _logType;
-        const ColorType _descColor;
-        const ColorType _msgColor;
-
-    public:
-        Logger(const LogType &logType, const ColorType &descColor, const ColorType &msgColor)
-            : _logType(logType), _descColor(descColor), _msgColor(msgColor) {}
-
-        Logger() = delete;
-        Logger(const Logger &) = delete;
-
-    public:
-        const LogType &logType() const { return this->_logType; }
-
-        const ColorType &descColor() const { return this->_descColor; }
-
-        const ColorType &msgColor() const { return this->_msgColor; }
-    };
-
-    struct _Endl
-    {
-    };
-    static const _Endl endl;
-#pragma region params
-
-    enum class LogType
-    {
-        INIT,
-        INFO,
-        PROCESS,
-        WARNING,
-        ERROR,
-        FATAL
-    };
-
-    /**
-     * @brief 
-     * @return std::unordered_map<LogType, std::string> 
-     */
-    static const std::unordered_map<LogType, std::string> descMap({std::make_pair(LogType::INFO, "[ info  ] "),
-                                                                   std::make_pair(LogType::PROCESS, "[process] "),
-                                                                   std::make_pair(LogType::WARNING, "[warning] "),
-                                                                   std::make_pair(LogType::ERROR, "[ error ] "),
-                                                                   std::make_pair(LogType::FATAL, "[ fatal ] ")});
-
-    enum class ColorType
-    {
-        NONE,
-        B_NONE,
-        BLACK,
-        B_BLACK,
-        RED,
-        B_RED,
-        GREEN,
-        B_GREEN,
-        BROWN,
-        B_BROWN,
-        YELLOW,
-        B_YELLOW,
-        BLUE,
-        B_BLUE,
-        PURPLE,
-        B_PURPLE,
-        CYAN,
-        B_CYAN,
-        GRAY,
-        WHITE,
-    };
-
-#ifdef __linux__
-    static const std::unordered_map<ColorType, std::string> colorMap({std::make_pair(ColorType::NONE, "\e[0m"),
-                                                                      std::make_pair(ColorType::B_NONE, "\e[1m"),
-                                                                      std::make_pair(ColorType::BLACK, "\e[0;30m"),
-                                                                      std::make_pair(ColorType::B_BLACK, "\e[1;30m"),
-                                                                      std::make_pair(ColorType::RED, "\e[0;31m"),
-                                                                      std::make_pair(ColorType::B_RED, "\e[1;31m"),
-                                                                      std::make_pair(ColorType::GREEN, "\e[0;32m"),
-                                                                      std::make_pair(ColorType::B_GREEN, "\e[1;32m"),
-                                                                      std::make_pair(ColorType::BROWN, "\e[0;33m"),
-                                                                      std::make_pair(ColorType::B_BROWN, "\e[1;33m"),
-                                                                      std::make_pair(ColorType::YELLOW, "\e[0;33m"),
-                                                                      std::make_pair(ColorType::B_YELLOW, "\e[1;33m"),
-                                                                      std::make_pair(ColorType::BLUE, "\e[0;34m"),
-                                                                      std::make_pair(ColorType::B_BLUE, "\e[1;34m"),
-                                                                      std::make_pair(ColorType::PURPLE, "\e[0;35m"),
-                                                                      std::make_pair(ColorType::B_PURPLE, "\e[1;35m"),
-                                                                      std::make_pair(ColorType::CYAN, "\e[0;36m"),
-                                                                      std::make_pair(ColorType::B_CYAN, "\e[1;36m"),
-                                                                      std::make_pair(ColorType::GRAY, "\e[0;37m"),
-                                                                      std::make_pair(ColorType::WHITE, "\e[1;37m")});
-#endif
-
-    static std::ostream *loggerOS = &std::cout;
-
-    static LogType curLogType = LogType::INIT;
-
-    static bool printTime = true;
-
-    static const Logger info(LogType::INFO, ColorType::B_NONE, ColorType::NONE);
-    static const Logger process(LogType::PROCESS, ColorType::B_GREEN, ColorType::GREEN);
-    static const Logger warning(LogType::WARNING, ColorType::B_YELLOW, ColorType::YELLOW);
-    static const Logger error(LogType::ERROR, ColorType::B_RED, ColorType::RED);
-    static const Logger fatal(LogType::FATAL, ColorType::B_PURPLE, ColorType::PURPLE);
-
-    static void setOstream(std::ostream &os) { loggerOS = &os; }
-
-    static void setPrintTime(bool printTime) { ns_log::printTime = printTime; }
-
-    static std::tuple<uint, uint, uint> curTime()
-    {
-        time_t now = time(0);
-        tm *ltm = localtime(&now);
-        return {ltm->tm_hour, ltm->tm_min, ltm->tm_sec};
-    }
-
-#pragma endregion
-
-#ifdef __linux__
-    template <typename _Ty>
-    const Logger &operator<<(const Logger &logger, const _Ty &msg)
-    {
-        if (loggerOS == &std::cout)
-            *(loggerOS) << colorMap.at(logger.descColor());
-
-        if (logger.logType() != curLogType)
+        struct Logger
         {
-            *(loggerOS) << descMap.at(logger.logType());
-            curLogType = logger.logType();
-            if (printTime)
+        private:
+            /**
+             * @brief the members
+             */
+            std::string _desc;
+            bool _firCall;
+
+        public:
+            /**
+             * @brief construct a new Logger object
+             */
+            Logger(const std::string &desc)
+                : _desc(desc), _firCall(true) {}
+
+            inline std::string &desc() { return this->_desc; }
+            inline const std::string &desc() const { return this->_desc; }
+
+            /**
+             * @brief overload the operator '()'
+             */
+            void operator()()
             {
-                auto [h, m, s] = curTime();
-                *(loggerOS) << '[' << h << ':' << m << ':' << s << "] ";
+                auto [h, m, s] = Logger::curTime();
+                ns_priv::getCurOS() << this->_desc << " [" << h << ':' << m << ':' << s << "] " << '\n';
+                this->_firCall = true;
+                return;
             }
-        }
 
-        if (loggerOS == &std::cout)
-            *(loggerOS) << colorMap.at(logger.msgColor());
-
-        *(loggerOS) << msg;
-
-        if (loggerOS == &std::cout)
-            *(loggerOS) << colorMap.at(ColorType::NONE);
-
-        return logger;
-    }
-
-#else
-    template <typename _Ty>
-    const Logger &operator<<(const Logger &logger, const _Ty &msg)
-    {
-        if (logger.logType() != curLogType)
-        {
-            *(loggerOS) << descMap.at(logger.logType());
-            curLogType = logger.logType();
-            if (printTime)
+            /**
+             * @brief overload the operator '()'
+             */
+            template <typename ArgvType>
+            void operator()(const ArgvType &argv)
             {
-                auto [h, m, s] = curTime();
-                *(loggerOS) << '[' << h << ':' << m << ':' << s << "] ";
+                if (this->_firCall)
+                {
+                    auto [h, m, s] = Logger::curTime();
+                    ns_priv::getCurOS() << this->_desc << " [" << h << ':' << m << ':' << s << "] ";
+                }
+                ns_priv::getCurOS() << argv << '\n';
+                this->_firCall = true;
+                return;
             }
-        }
 
-        *(loggerOS) << msg;
+            /**
+             * @brief overload the operator '()'
+             */
+            template <typename ArgvType, typename... ArgvsType>
+            void operator()(const ArgvType &argv, const ArgvsType &...argvs)
+            {
+                if (this->_firCall)
+                {
+                    auto [h, m, s] = Logger::curTime();
+                    ns_priv::getCurOS() << this->_desc << " [" << h << ':' << m << ':' << s << "] " << argv;
+                    this->_firCall = false;
+                }
+                else
+                    ns_priv::getCurOS() << argv;
+                return (*this)(argvs...);
+            }
 
-        return logger;
-    }
-#endif
+        protected:
+            /**
+             * @brief get the time when the message is outputed
+             * 
+             * @return std::tuple<uint, uint, uint> 
+             */
+            static std::tuple<uint, uint, uint> curTime()
+            {
+                time_t now = time(0);
+                tm *ltm = localtime(&now);
+                return {ltm->tm_hour, ltm->tm_min, ltm->tm_sec};
+            }
+        };
 
-    static const Logger &operator<<(const Logger &logger, const _Endl e)
-    {
-        curLogType = LogType::INIT, *(loggerOS) << '\n';
-        return logger;
-    }
+        static Logger info("[ info  ]"), process("[process]"), warning("[warning]"), error("[ error ]"), fatal("[ fatal ]");
+    } // namespace ns_priv
 
-#pragma region macro
+    /**
+     * @brief Set the current ostream
+     * 
+     * @param os the ostream
+     */
+    static void setCurOS(std::ostream &os) { ns_priv::logerOS = &os; }
 
-#pragma region process
-    static void __print__process()
-    {
-        return;
-    }
-
-    template <typename ArgvType>
-    void __print__process(const ArgvType &argv)
-    {
-        ns_log::process << argv;
-        return;
-    }
-
-    template <typename ArgvType, typename... ElseType>
-    void __print__process(const ArgvType &argv, const ElseType &...argvs)
-    {
-        ns_log::process << argv;
-        return __print__process(argvs...);
-    }
-
-#define PROCESS(...)                       \
-    ns_log::__print__process(__VA_ARGS__); \
-    ns_log::process << (ns_log::endl);
-#define PROCESS_BEG(...)                   \
-    ns_log::__print__process(__VA_ARGS__); \
-    ns_log::process << ('\n');
-#define PROCESS_OUT(...)                   \
-    ns_log::__print__process(__VA_ARGS__); \
-    ns_log::process << ('\n');
-#define PROCESS_END(...)                   \
-    ns_log::__print__process(__VA_ARGS__); \
-    ns_log::process << ns_log::endl;
-#pragma endregion
-
-#pragma region info
-    static void __print__info()
-    {
-        return;
-    }
-
-    template <typename ArgvType>
-    void __print__info(const ArgvType &argv)
-    {
-        ns_log::info << argv;
-        return;
-    }
-
-    template <typename ArgvType, typename... ElseType>
-    void __print__info(const ArgvType &argv, const ElseType &...argvs)
-    {
-        ns_log::info << argv;
-        return __print__info(argvs...);
-    }
-
-#define INFO(...)                       \
-    ns_log::__print__info(__VA_ARGS__); \
-    ns_log::info << (ns_log::endl);
-#define INFO_BEG(...)                   \
-    ns_log::__print__info(__VA_ARGS__); \
-    ns_log::info << ('\n');
-#define INFO_OUT(...)                   \
-    ns_log::__print__info(__VA_ARGS__); \
-    ns_log::info << ('\n');
-#define INFO_END(...)                   \
-    ns_log::__print__info(__VA_ARGS__); \
-    ns_log::info << ns_log::endl;
-#pragma endregion
-
-#pragma region error
-    static void __print__error()
-    {
-        return;
-    }
-
-    template <typename ArgvType>
-    void __print__error(const ArgvType &argv)
-    {
-        ns_log::error << argv;
-        return;
-    }
-
-    template <typename ArgvType, typename... ElseType>
-    void __print__error(const ArgvType &argv, const ElseType &...argvs)
-    {
-        ns_log::error << argv;
-        return __print__error(argvs...);
-    }
-
-#define ERROR(...)                       \
-    ns_log::__print__error(__VA_ARGS__); \
-    ns_log::error << (ns_log::endl);
-#define ERROR_BEG(...)                   \
-    ns_log::__print__error(__VA_ARGS__); \
-    ns_log::error << ('\n');
-#define ERROR_OUT(...)                   \
-    ns_log::__print__error(__VA_ARGS__); \
-    ns_log::error << ('\n');
-#define ERROR_END(...)                   \
-    ns_log::__print__error(__VA_ARGS__); \
-    ns_log::error << ns_log::endl;
-#pragma endregion
-
-#pragma region fatal
-    static void __print__fatal()
-    {
-        return;
-    }
-
-    template <typename ArgvType>
-    void __print__fatal(const ArgvType &argv)
-    {
-        ns_log::fatal << argv;
-        return;
-    }
-
-    template <typename ArgvType, typename... ElseType>
-    void __print__fatal(const ArgvType &argv, const ElseType &...argvs)
-    {
-        ns_log::fatal << argv;
-        return __print__fatal(argvs...);
-    }
-
-#define FATAL(...)                       \
-    ns_log::__print__fatal(__VA_ARGS__); \
-    ns_log::fatal << (ns_log::endl);
-#define FATAL_BEG(...)                   \
-    ns_log::__print__fatal(__VA_ARGS__); \
-    ns_log::fatal << ('\n');
-#define FATAL_OUT(...)                   \
-    ns_log::__print__fatal(__VA_ARGS__); \
-    ns_log::fatal << ('\n');
-#define FATAL_END(...)                   \
-    ns_log::__print__fatal(__VA_ARGS__); \
-    ns_log::fatal << ns_log::endl;
-#pragma endregion
-
-#pragma region warning
-    static void __print__warning()
-    {
-        return;
-    }
-
-    template <typename ArgvType>
-    void __print__warning(const ArgvType &argv)
-    {
-        ns_log::warning << argv;
-        return;
-    }
-
-    template <typename ArgvType, typename... ElseType>
-    void __print__warning(const ArgvType &argv, const ElseType &...argvs)
-    {
-        ns_log::warning << argv;
-        return __print__warning(argvs...);
-    }
-
-#define WARNING(...)                       \
-    ns_log::__print__warning(__VA_ARGS__); \
-    ns_log::warning << (ns_log::endl);
-#define WARNING_BEG(...)                   \
-    ns_log::__print__warning(__VA_ARGS__); \
-    ns_log::warning << ('\n');
-#define WARNING_OUT(...)                   \
-    ns_log::__print__warning(__VA_ARGS__); \
-    ns_log::warning << ('\n');
-#define WARNING_END(...)                   \
-    ns_log::__print__warning(__VA_ARGS__); \
-    ns_log::warning << ns_log::endl;
-#pragma endregion
-
-#pragma region plaintext
-
-    static void __print__()
-    {
-        return;
-    }
-
-    template <typename ArgvType>
-    void __print__(const ArgvType &argv)
-    {
-        *(ns_log::loggerOS) << argv;
-        return;
-    }
-
-    template <typename ArgvType, typename... ElseType>
-    void __print__(const ArgvType &argv, const ElseType &...argvs)
-    {
-        *(ns_log::loggerOS) << argv;
-        return __print__(argvs...);
-    }
-
-#define PLAINTEXT(...)              \
-    ns_log::__print__(__VA_ARGS__); \
-    *(ns_log::loggerOS) << '\n';
-
-#pragma endregion
-
-#pragma endregion
+/**
+ * @brief the main message type macroes
+ * 
+ * [1] info    {Information; Message; real-time info Of information; Of messages; Informative}
+ * [2] process {The process of achieving a goal; The development of things, especially the steps of natural change;}
+ * [3] warning {about possible accidents, etc.; a warning, warning, etc about the punishment to be suffered}
+ * [4] error   {Error; Errors; Fallacy;}
+ * [5] fatal   {Fatal; Catastrophic; Destructive; Cause failure}
+ * 
+ */
+#define INFO(...) ns_log::ns_priv::info(__VA_ARGS__)
+#define PROCESS(...) ns_log::ns_priv::process(__VA_ARGS__)
+#define WARNING(...) ns_log::ns_priv::warning(__VA_ARGS__)
+#define ERROR(...) ns_log::ns_priv::error(__VA_ARGS__)
+#define FATAL(...) ns_log::ns_priv::fatal(__VA_ARGS__)
 
 } // namespace ns_log

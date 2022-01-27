@@ -1,10 +1,5 @@
-[warning] [18:16:28] Here, I want to say something:
-[1] No pains, no gains.
-[2] A friend in need is a friend indeed.
-[3] Cpp is the best programing language.
-well, I finished.
-[process] [18:16:28] to open the file 'nofile.txt'
-[ error ] [18:16:28] the file 'nofile.txt' open faild.
-maybe the file is miss or the filename is wrong.
-[ fatal ] [18:16:28] this is a fatal message.
-[ info  ] [18:16:28] this is a vector: [0, 1, 2, 3]
+[ info  ] [13:58:28] this is a vector<int>: [1, 2, 3, 4, 5]
+[process] [13:58:28] we all konw that PI equals to 3.14159
+[warning] [13:58:28] here is a 'Info' type struct object: {'id': 12, 'dur': 13.4}
+[ error ] [13:58:28] the ofstream is open? (1)
+[ fatal ] [13:58:28] hello, world. My E-Mail is 3079625093@qq.com.
