@@ -5,6 +5,14 @@
 
 ## Override
 This is just a simple logger, usage is also simple.
+```cpp
+                                        _                             
+                                        | | ___   __ _  __ _  ___ _ __ 
+                                        | |/ _ \ / _` |/ _` |/ _ \ '__|
+                                        | | (_) | (_| | (_| |  __/ |   
+                                        |_|\___/ \__, |\__, |\___|_|   
+                                                |___/ |___/          
+```
 
 
 |message type|describe|
