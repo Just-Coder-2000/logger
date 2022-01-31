@@ -1,6 +1,10 @@
-#include "logger.h"
+#define FORMAT_ARRAY
+#define FORMAT_LIST
+#define FORMAT_VECTOR
+
 #include <fstream>
 #include <cmath>
+#include "logger.h"
 
 #pragma region output for structure
 
@@ -39,72 +43,11 @@ std::ostream &operator<<(std::ostream &os, const Info &obj)
 
 #pragma endregion
 
-#pragma region output for container
-
-/**
- * @brief params to control
- * @param splitor the splitor to split the elements
- * @param firName the describe name for the first element of the std::pair
- * @param sedName the describe name for the second element of the std::pair
- */
-static std::string splitor(", ");
-static std::string firName("fir");
-static std::string sedName("sed");
-
-/**
- * @brief Set the splitor
- */
-static void setSplitor(const std::string &sp)
-{
-    splitor = sp;
-}
-
-/**
- * @brief Set the firName and sedName
- */
-static void setFirSedName(const std::string &firstName, const std::string &secondName)
-{
-    firName = firstName, sedName = secondName;
-}
-
-/**
- * @brief overload the operator '<<' for std::pair
- */
-template <typename Key, typename Val>
-std::ostream &operator<<(std::ostream &os, const std::pair<Key, Val> &p)
-{
-    os << "{'" + firName + "': " << p.first << ", '" + sedName + "': " << p.second << '}';
-    return os;
-}
-
-/**
- * @brief output format for container
- */
-template <typename ConType>
-std::ostream &outputCon(std::ostream &os, const ConType &s)
-{
-    os << '[';
-    auto iter = s.cbegin();
-    for (; iter != (--s.cend()); ++iter)
-        os << *iter << splitor;
-    os << *iter << ']';
-    return os;
-}
-
-/**
- * @brief overload the operator '<<' for std::vector
- */
-template <typename Val>
-std::ostream &operator<<(std::ostream &os, const std::vector<Val> &s)
-{
-    return outputCon(os, s);
-}
-
-#pragma endregion
-
 void log()
 {
-    INFO("this", ' ', "is", ' ', "a", ' ', "vector<int>: ", std::vector<int>{1, 2, 3, 4, 5});
+    INFO("this is a list<int>: ", std::list<int>{1, 2, 3, 4, 5});
+    INFO("this is a array<int, 3>: ", std::array<int, 3>{1, 4, 5});
+    INFO("this is a empty vector<double>: ", std::vector<double>{});
     PROCESS("we all konw that PI equals to ", M_PI);
     WARNING("here is a 'Info' type struct object: ", Info(12, 13.4f));
     ERROR("the ofstream is open? (", true, ")");

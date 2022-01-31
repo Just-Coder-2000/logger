@@ -1,5 +1,7 @@
-[ info  ] [13:58:28] this is a vector<int>: [1, 2, 3, 4, 5]
-[process] [13:58:28] we all konw that PI equals to 3.14159
-[warning] [13:58:28] here is a 'Info' type struct object: {'id': 12, 'dur': 13.4}
-[ error ] [13:58:28] the ofstream is open? (1)
-[ fatal ] [13:58:28] hello, world. My E-Mail is 3079625093@qq.com.
+[ info  ] [13:16:46] this is a list<int>: [1, 2, 3, 4, 5]
+[ info  ] [13:16:46] this is a array<int, 3>: [1, 4, 5]
+[ info  ] [13:16:46] this is a empty vector<double>: [(empty)]
+[process] [13:16:46] we all konw that PI equals to 3.14159
+[warning] [13:16:46] here is a 'Info' type struct object: {'id': 12, 'dur': 13.4}
+[ error ] [13:16:46] the ofstream is open? (1)
+[ fatal ] [13:16:46] hello, world. My E-Mail is 3079625093@qq.com.
