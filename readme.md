@@ -15,6 +15,9 @@ _|_|_|_|    _|_|      _|_|_|    _|_|_|    _|_|_|  _|
                       _|_|      _|_|                       
 ```
 
+<center>
+
+log message macroes
 
 |message type|describe|
 |---|---| 
@@ -24,16 +27,46 @@ _|_|_|_|    _|_|      _|_|_|    _|_|_|    _|_|_|  _|
 |error|Error; Errors; Fallacy;|
 |fatal|Fatal; Catastrophic; Destructive; Cause failure|
 
+</center>
+
+<center>
+
+setting methods
+
 |main method|describe|
 |---|---|
-|void setCurOS(std::ostream &)| set the output stream|
+|void setCurOS(std::ostream &)|Set the output stream|
+|static void setSplitor(const std::string &sp)|Set the splitor for container output format|
+|static void setFirSedName(const std::string &firstName, const std::string &secondName)|Set the firName and sedName for std::pair|
 
+</center>
+
+<center>
+
+format macroes for STL containers
+
+|describe|format macroes|
+|---|---|
+|the map relatived containers|FORMAT_MAP FORMAT_MULTIMAP FORMAT_UNORDERED_MAP FORMAT_UNORDERED_MULTIMAP|
+|the set relatived containers|FORMAT_SET FORMAT_UNORDERED_SET FORMAT_MULTISET FORMAT_UNORDERED_MULTISET|
+|the sequence containers|FORMAT_VECTOR FORMAT_LIST FORMAT_DEQUE FORMAT_ARRAY|
+|the stack and queue|FORMAT_STACK FORMAT_QUEUE|
+
+</center>
 
 ## Usage
 ```cpp
+#define FORMAT_ARRAY
+#define FORMAT_LIST
+#define FORMAT_VECTOR
+
+#include "logger.h"
+
 void log()
 {
-    INFO("this", ' ', "is", ' ', "a", ' ', "vector<int>: ", std::vector<int>{1, 2, 3, 4, 5});
+    INFO("this is a list<int>: ", std::list<int>{1, 2, 3, 4, 5});
+    INFO("this is a array<int, 3>: ", std::array<int, 3>{1, 4, 5});
+    INFO("this is a empty vector<double>: ", std::vector<double>{});
     PROCESS("we all konw that PI equals to ", M_PI);
     WARNING("here is a 'Info' type struct object: ", Info(12, 13.4f));
     ERROR("the ofstream is open? (", true, ")");
@@ -60,9 +93,12 @@ int main(int argc, char const *argv[])
 
 the log file is [here](./log.log)
 ```log
-[ info  ] [13:58:28] this is a vector<int>: [1, 2, 3, 4, 5]
-[process] [13:58:28] we all konw that PI equals to 3.14159
-[warning] [13:58:28] here is a 'Info' type struct object: {'id': 12, 'dur': 13.4}
-[ error ] [13:58:28] the ofstream is open? (1)
-[ fatal ] [13:58:28] hello, world. My E-Mail is 3079625093@qq.com.
+[ info  ] [12:33:6] this is a list<int>: [1, 2, 3, 4, 5]
+[ info  ] [12:33:6] this is a array<int, 3>: [1, 4, 5]
+[ info  ] [12:33:6] this is a empty vector<double>: [(empty)]
+[process] [12:33:6] we all konw that PI equals to 3.14159
+[warning] [12:33:6] here is a 'Info' type struct object: {'id': 12, 'dur': 13.4}
+[ error ] [12:33:6] the ofstream is open? (1)
+[ fatal ] [12:33:6] hello, world. My E-Mail is 3079625093@qq.com.
+
 ```
