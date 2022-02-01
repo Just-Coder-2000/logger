@@ -65,12 +65,15 @@ format macroes for STL containers
 void log()
 {
     INFO("this is a list<int>: ", std::list<int>{1, 2, 3, 4, 5});
+    TEXT("this is a text message: ", "hello, ", "world.");
     INFO("this is a array<int, 3>: ", std::array<int, 3>{1, 4, 5});
     INFO("this is a empty vector<double>: ", std::vector<double>{});
+    TEXT();
     PROCESS("we all konw that PI equals to ", M_PI);
+    INFO();
     WARNING("here is a 'Info' type struct object: ", Info(12, 13.4f));
     ERROR("the ofstream is open? (", true, ")");
-    FATAL("hello, world. ", "My E-Mail is ", "3079625093@qq.com.");
+    FATAL("hello, world. ", "My E-Mail is ", "[3079625093@qq.com].");
 }
 
 int main(int argc, char const *argv[])
@@ -93,12 +96,14 @@ int main(int argc, char const *argv[])
 
 the log file is [here](./log.log)
 ```log
-[ info  ] [12:33:6] this is a list<int>: [1, 2, 3, 4, 5]
-[ info  ] [12:33:6] this is a array<int, 3>: [1, 4, 5]
-[ info  ] [12:33:6] this is a empty vector<double>: [(empty)]
-[process] [12:33:6] we all konw that PI equals to 3.14159
-[warning] [12:33:6] here is a 'Info' type struct object: {'id': 12, 'dur': 13.4}
-[ error ] [12:33:6] the ofstream is open? (1)
-[ fatal ] [12:33:6] hello, world. My E-Mail is 3079625093@qq.com.
+[ info  ] [9:46:28] this is a list<int>: [1, 2, 3, 4, 5]
+this is a text message: hello, world.
+[ info  ] [9:46:28] this is a array<int, 3>: [1, 4, 5]
+[ info  ] [9:46:28] this is a empty vector<double>: [(empty)]
 
+[process] [9:46:28] we all konw that PI equals to 3.14159
+[ info  ] [9:46:28]
+[warning] [9:46:28] here is a 'Info' type struct object: {'id': 12, 'dur': 13.4}
+[ error ] [9:46:28] the ofstream is open? (1)
+[ fatal ] [9:46:28] hello, world. My E-Mail is [3079625093@qq.com].
 ```

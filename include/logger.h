@@ -79,7 +79,14 @@ namespace ns_log::ns_priv
         void operator()()
         {
             auto [h, m, s] = Logger::curTime();
-            ns_priv::getCurOS() << this->_desc << " [" << h << ':' << m << ':' << s << "] " << '\n';
+#ifdef __linux__
+            if (logerOS == &std::cout)
+                ns_priv::getCurOS() << "\e[1m" << this->_desc << " [" << h << ':' << m << ':' << s << "]\n";
+            else
+                ns_priv::getCurOS() << this->_desc << " [" << h << ':' << m << ':' << s << "]\n";
+#else
+            ns_priv::getCurOS() << this->_desc << " [" << h << ':' << m << ':' << s << "]\n";
+#endif
             this->_firCall = true;
             return;
         }
@@ -93,9 +100,26 @@ namespace ns_log::ns_priv
             if (this->_firCall)
             {
                 auto [h, m, s] = Logger::curTime();
+#ifdef __linux__
+                if (logerOS == &std::cout)
+                    ns_priv::getCurOS() << "\e[1m" << this->_desc << " [" << h << ':' << m << ':' << s << "] ";
+                else
+                    ns_priv::getCurOS() << this->_desc << " [" << h << ':' << m << ':' << s << "] ";
+#else
                 ns_priv::getCurOS() << this->_desc << " [" << h << ':' << m << ':' << s << "] ";
+#endif
             }
-            ns_priv::getCurOS() << argv << '\n';
+            else
+            {
+#ifdef __linux__
+                if (logerOS == &std::cout)
+                    ns_priv::getCurOS() << argv << "\e[0m\n";
+                else
+                    ns_priv::getCurOS() << argv << "\n";
+#else
+                ns_priv::getCurOS() << argv << "\n";
+#endif
+            }
             this->_firCall = true;
             return;
         }
@@ -108,9 +132,16 @@ namespace ns_log::ns_priv
         {
             if (this->_firCall)
             {
-                auto [h, m, s] = Logger::curTime();
-                ns_priv::getCurOS() << this->_desc << " [" << h << ':' << m << ':' << s << "] " << argv;
                 this->_firCall = false;
+                auto [h, m, s] = Logger::curTime();
+#ifdef __linux__
+                if (logerOS == &std::cout)
+                    ns_priv::getCurOS() << "\e[1m" << this->_desc << " [" << h << ':' << m << ':' << s << "] " << argv;
+                else
+                    ns_priv::getCurOS() << this->_desc << " [" << h << ':' << m << ':' << s << "] " << argv;
+#else
+                ns_priv::getCurOS() << this->_desc << " [" << h << ':' << m << ':' << s << "] " << argv;
+#endif
             }
             else
                 ns_priv::getCurOS() << argv;
@@ -130,6 +161,25 @@ namespace ns_log::ns_priv
             return {ltm->tm_hour, ltm->tm_min, ltm->tm_sec};
         }
     };
+
+    void __print__()
+    {
+        getCurOS() << '\n';
+        return;
+    }
+
+    template <typename ArgvType>
+    void __print__(const ArgvType &argv)
+    {
+        getCurOS() << argv << '\n';
+    }
+
+    template <typename ArgvType, typename... ArgvsType>
+    void __print__(const ArgvType &argv, const ArgvsType &...argvs)
+    {
+        getCurOS() << argv;
+        __print__(argvs...);
+    }
 
     static Logger info("[ info  ]"), process("[process]"), warning("[warning]"), error("[ error ]"), fatal("[ fatal ]");
 
@@ -427,5 +477,7 @@ namespace ns_log
 #define WARNING(...) ns_log::ns_priv::warning(__VA_ARGS__)
 #define ERROR(...) ns_log::ns_priv::error(__VA_ARGS__)
 #define FATAL(...) ns_log::ns_priv::fatal(__VA_ARGS__)
+
+#define TEXT(...) ns_log::ns_priv::__print__(__VA_ARGS__)
 
 } // namespace ns_log

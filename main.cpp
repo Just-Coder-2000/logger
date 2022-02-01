@@ -46,12 +46,15 @@ std::ostream &operator<<(std::ostream &os, const Info &obj)
 void log()
 {
     INFO("this is a list<int>: ", std::list<int>{1, 2, 3, 4, 5});
+    TEXT("this is a text message: ", "hello, ", "world.");
     INFO("this is a array<int, 3>: ", std::array<int, 3>{1, 4, 5});
     INFO("this is a empty vector<double>: ", std::vector<double>{});
+    TEXT();
     PROCESS("we all konw that PI equals to ", M_PI);
+    INFO();
     WARNING("here is a 'Info' type struct object: ", Info(12, 13.4f));
     ERROR("the ofstream is open? (", true, ")");
-    FATAL("hello, world. ", "My E-Mail is ", "3079625093@qq.com.");
+    FATAL("hello, world. ", "My E-Mail is ", "[3079625093@qq.com].");
 }
 
 int main(int argc, char const *argv[])
