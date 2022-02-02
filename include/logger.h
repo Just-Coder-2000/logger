@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include <chrono>
 
 /**
  * @brief the main message type macroes: everything that overrides the operator '<<' can use the macroes.
@@ -78,15 +79,13 @@ namespace ns_log::ns_priv
          */
         void operator()()
         {
-            auto [h, m, s] = Logger::curTime();
+            std::string head(""), tail("");
+            auto count = Logger::curTime();
 #ifdef __linux__
             if (logerOS == &std::cout)
-                ns_priv::getCurOS() << "\e[1m" << this->_desc << " [" << h << ':' << m << ':' << s << "]\n";
-            else
-                ns_priv::getCurOS() << this->_desc << " [" << h << ':' << m << ':' << s << "]\n";
-#else
-            ns_priv::getCurOS() << this->_desc << " [" << h << ':' << m << ':' << s << "]\n";
+                head = "\e[1m", tail = "\e[0m";
 #endif
+            ns_priv::getCurOS() << head << this->_desc << " [" << count << "]" << tail << '\n';
             this->_firCall = true;
             return;
         }
@@ -99,26 +98,22 @@ namespace ns_log::ns_priv
         {
             if (this->_firCall)
             {
-                auto [h, m, s] = Logger::curTime();
+                std::string head(""), tail("");
+                auto count = Logger::curTime();
 #ifdef __linux__
                 if (logerOS == &std::cout)
-                    ns_priv::getCurOS() << "\e[1m" << this->_desc << " [" << h << ':' << m << ':' << s << "] ";
-                else
-                    ns_priv::getCurOS() << this->_desc << " [" << h << ':' << m << ':' << s << "] ";
-#else
-                ns_priv::getCurOS() << this->_desc << " [" << h << ':' << m << ':' << s << "] ";
+                    head = "\e[1m", tail = "\e[0m";
 #endif
+                ns_priv::getCurOS() << head << this->_desc << " [" << count << "] " << argv << tail << '\n';
             }
             else
             {
+                std::string tail("");
 #ifdef __linux__
                 if (logerOS == &std::cout)
-                    ns_priv::getCurOS() << argv << "\e[0m\n";
-                else
-                    ns_priv::getCurOS() << argv << "\n";
-#else
-                ns_priv::getCurOS() << argv << "\n";
+                    tail = "\e[0m";
 #endif
+                ns_priv::getCurOS() << argv << tail << '\n';
             }
             this->_firCall = true;
             return;
@@ -133,15 +128,13 @@ namespace ns_log::ns_priv
             if (this->_firCall)
             {
                 this->_firCall = false;
-                auto [h, m, s] = Logger::curTime();
+                std::string head("");
+                auto count = Logger::curTime();
 #ifdef __linux__
                 if (logerOS == &std::cout)
-                    ns_priv::getCurOS() << "\e[1m" << this->_desc << " [" << h << ':' << m << ':' << s << "] " << argv;
-                else
-                    ns_priv::getCurOS() << this->_desc << " [" << h << ':' << m << ':' << s << "] " << argv;
-#else
-                ns_priv::getCurOS() << this->_desc << " [" << h << ':' << m << ':' << s << "] " << argv;
+                    head = "\e[1m";
 #endif
+                ns_priv::getCurOS() << head << this->_desc << " [" << count << "] " << argv;
             }
             else
                 ns_priv::getCurOS() << argv;
@@ -152,13 +145,12 @@ namespace ns_log::ns_priv
         /**
              * @brief get the time when the message is outputed
              * 
-             * @return std::tuple<uint, uint, uint> 
+             * @return int64_t
              */
-        static std::tuple<uint, uint, uint> curTime()
+        static int64_t curTime()
         {
-            time_t now = time(0);
-            tm *ltm = localtime(&now);
-            return {ltm->tm_hour, ltm->tm_min, ltm->tm_sec};
+            auto now = std::chrono::system_clock::now();
+            return std::chrono::time_point_cast<std::chrono::seconds>(now).time_since_epoch().count();
         }
     };
 
