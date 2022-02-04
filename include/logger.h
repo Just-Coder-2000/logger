@@ -43,154 +43,137 @@
  * [4] FORMAT_STACK FORMAT_QUEUE
  */
 
-namespace ns_log::ns_priv
-{
-    /**
-     * @brief the ostream
-     */
-    static std::ostream *logerOS = &(std::cout);
+namespace ns_log::ns_priv {
+/**
+ * @brief the ostream
+ */
+static std::ostream *logerOS = &(std::cout);
 
-    /**
-     * @brief Get the current ostream
-     *
-     * @return std::ostream&
-     */
-    static std::ostream &getCurOS() { return *(ns_priv::logerOS); }
+/**
+ * @brief Get the current ostream
+ *
+ * @return std::ostream&
+ */
+static std::ostream &getCurOS() { return *(ns_priv::logerOS); }
 
-    struct Logger
-    {
-    private:
-        /**
-         * @brief the members
-         */
-        std::string _desc;
-        bool _firCall;
+struct Logger {
+ private:
+  /**
+   * @brief the members
+   */
+  std::string _desc;
+  bool _firCall;
 
-    public:
-        /**
-         * @brief construct a new Logger object
-         */
-        Logger(const std::string &desc) : _desc(desc), _firCall(true) {}
+ public:
+  /**
+   * @brief construct a new Logger object
+   */
+  Logger(const std::string &desc) : _desc(desc), _firCall(true) {}
 
-        inline std::string &desc() { return this->_desc; }
-        inline const std::string &desc() const { return this->_desc; }
+  inline std::string &desc() { return this->_desc; }
+  inline const std::string &desc() const { return this->_desc; }
 
-        /**
-         * @brief overload the operator '()'
-         */
-        void operator()()
-        {
-            std::string head(""), tail("");
-            auto count = Logger::curTime();
+  /**
+   * @brief overload the operator '()'
+   */
+  void operator()() {
+    std::string head(""), tail("");
+    auto count = Logger::curTime();
 #ifdef __linux__
-            if (logerOS == &std::cout)
-                head = "\e[1m", tail = "\e[0m";
+    if (logerOS == &std::cout) head = "\e[1m", tail = "\e[0m";
 #endif
-            ns_priv::getCurOS() << head << this->_desc << " [" << count << "]" << tail
-                                << '\n';
-            this->_firCall = true;
-            return;
-        }
+    ns_priv::getCurOS() << head << this->_desc << " [" << count << "]" << tail
+                        << '\n';
+    this->_firCall = true;
+    return;
+  }
 
-        /**
-         * @brief overload the operator '()'
-         */
-        template <typename ArgvType>
-        void operator()(const ArgvType &argv)
-        {
-            if (this->_firCall)
-            {
-                std::string head(""), tail("");
-                auto count = Logger::curTime();
+  /**
+   * @brief overload the operator '()'
+   */
+  template <typename ArgvType>
+  void operator()(const ArgvType &argv) {
+    if (this->_firCall) {
+      std::string head(""), tail("");
+      auto count = Logger::curTime();
 #ifdef __linux__
-                if (logerOS == &std::cout)
-                    head = "\e[1m", tail = "\e[0m";
+      if (logerOS == &std::cout) head = "\e[1m", tail = "\e[0m";
 #endif
-                ns_priv::getCurOS() << head << this->_desc << " [" << count << "] "
-                                    << argv << tail << '\n';
-            }
-            else
-            {
-                std::string tail("");
+      ns_priv::getCurOS() << head << this->_desc << " [" << count << "] "
+                          << argv << tail << '\n';
+    } else {
+      std::string tail("");
 #ifdef __linux__
-                if (logerOS == &std::cout)
-                    tail = "\e[0m";
+      if (logerOS == &std::cout) tail = "\e[0m";
 #endif
-                ns_priv::getCurOS() << argv << tail << '\n';
-            }
-            this->_firCall = true;
-            return;
-        }
-
-        /**
-         * @brief overload the operator '()'
-         */
-        template <typename ArgvType, typename... ArgvsType>
-        void operator()(const ArgvType &argv, const ArgvsType &...argvs)
-        {
-            if (this->_firCall)
-            {
-                this->_firCall = false;
-                std::string head("");
-                auto count = Logger::curTime();
-#ifdef __linux__
-                if (logerOS == &std::cout)
-                    head = "\e[1m";
-#endif
-                ns_priv::getCurOS() << head << this->_desc << " [" << count << "] " << argv;
-            }
-            else
-                ns_priv::getCurOS() << argv;
-            return (*this)(argvs...);
-        }
-
-    protected:
-        /**
-         * @brief get the time when the message is outputed
-         *
-         * @return int64_t
-         */
-        static int64_t curTime()
-        {
-            auto now = std::chrono::system_clock::now();
-            return std::chrono::time_point_cast<std::chrono::seconds>(now)
-                .time_since_epoch()
-                .count();
-        }
-    };
-
-    void __print__()
-    {
-        getCurOS() << '\n';
-        return;
+      ns_priv::getCurOS() << argv << tail << '\n';
     }
+    this->_firCall = true;
+    return;
+  }
 
-    template <typename ArgvType>
-    void __print__(const ArgvType &argv)
-    {
-        getCurOS() << argv << '\n';
-    }
+  /**
+   * @brief overload the operator '()'
+   */
+  template <typename ArgvType, typename... ArgvsType>
+  void operator()(const ArgvType &argv, const ArgvsType &...argvs) {
+    if (this->_firCall) {
+      this->_firCall = false;
+      std::string head("");
+      auto count = Logger::curTime();
+#ifdef __linux__
+      if (logerOS == &std::cout) head = "\e[1m";
+#endif
+      ns_priv::getCurOS() << head << this->_desc << " [" << count << "] "
+                          << argv;
+    } else
+      ns_priv::getCurOS() << argv;
+    return (*this)(argvs...);
+  }
 
-    template <typename ArgvType, typename... ArgvsType>
-    void __print__(const ArgvType &argv, const ArgvsType &...argvs)
-    {
-        getCurOS() << argv;
-        __print__(argvs...);
-    }
+ protected:
+  /**
+   * @brief get the time when the message is outputed
+   *
+   * @return int64_t
+   */
+  static int64_t curTime() {
+    auto now = std::chrono::system_clock::now();
+    return std::chrono::time_point_cast<std::chrono::seconds>(now)
+        .time_since_epoch()
+        .count();
+  }
+};
 
-    static Logger info("[ info  ]"), process("[process]"), warning("[warning]"),
-        error("[ error ]"), fatal("[ fatal ]");
+void __print__() {
+  getCurOS() << '\n';
+  return;
+}
 
-    /**
-     * @brief params to control
-     * @param splitor the splitor to split the elements
-     * @param firName the describe name for the first element of the std::pair
-     * @param sedName the describe name for the second element of the std::pair
-     */
-    static std::string splitor(", ");
-    static std::string firName("fir");
-    static std::string sedName("sed");
-} // namespace ns_log::ns_priv
+template <typename ArgvType>
+void __print__(const ArgvType &argv) {
+  getCurOS() << argv << '\n';
+}
+
+template <typename ArgvType, typename... ArgvsType>
+void __print__(const ArgvType &argv, const ArgvsType &...argvs) {
+  getCurOS() << argv;
+  __print__(argvs...);
+}
+
+static Logger info("[ info  ]"), process("[process]"), warning("[warning]"),
+    error("[ error ]"), fatal("[ fatal ]");
+
+/**
+ * @brief params to control
+ * @param splitor the splitor to split the elements
+ * @param firName the describe name for the first element of the std::pair
+ * @param sedName the describe name for the second element of the std::pair
+ */
+static std::string splitor(", ");
+static std::string firName("fir");
+static std::string sedName("sed");
+}  // namespace ns_log::ns_priv
 
 #pragma region output for container
 
@@ -198,30 +181,26 @@ namespace ns_log::ns_priv
  * @brief overload the operator '<<' for std::pair
  */
 template <typename Key, typename Val>
-std::ostream &operator<<(std::ostream &os, const std::pair<Key, Val> &p)
-{
-    os << "{'" + ns_log::ns_priv::firName + "': " << p.first
-       << ", '" + ns_log::ns_priv::sedName + "': " << p.second << '}';
-    return os;
+std::ostream &operator<<(std::ostream &os, const std::pair<Key, Val> &p) {
+  os << "{'" + ns_log::ns_priv::firName + "': " << p.first
+     << ", '" + ns_log::ns_priv::sedName + "': " << p.second << '}';
+  return os;
 }
 
 /**
  * @brief output format for container
  */
 template <typename ConType>
-std::ostream &outputCon(std::ostream &os, const ConType &s)
-{
-    os << '[';
-    if (s.empty())
-    {
-        os << "(empty)]";
-        return os;
-    }
-    auto iter = s.cbegin();
-    for (; iter != (--s.cend()); ++iter)
-        os << *iter << ns_log::ns_priv::splitor;
-    os << *iter << ']';
+std::ostream &outputCon(std::ostream &os, const ConType &s) {
+  os << '[';
+  if (s.empty()) {
+    os << "(empty)]";
     return os;
+  }
+  auto iter = s.cbegin();
+  for (; iter != (--s.cend()); ++iter) os << *iter << ns_log::ns_priv::splitor;
+  os << *iter << ']';
+  return os;
 }
 
 #pragma endregion
@@ -234,9 +213,8 @@ std::ostream &outputCon(std::ostream &os, const ConType &s)
  * @brief overload the operator '<<' for std::map
  */
 template <typename Key, typename Val>
-std::ostream &operator<<(std::ostream &os, const std::map<Key, Val> &m)
-{
-    return outputCon(os, m);
+std::ostream &operator<<(std::ostream &os, const std::map<Key, Val> &m) {
+  return outputCon(os, m);
 }
 #endif
 
@@ -246,9 +224,8 @@ std::ostream &operator<<(std::ostream &os, const std::map<Key, Val> &m)
  * @brief overload the operator '<<' for std::multimap
  */
 template <typename Key, typename Val>
-std::ostream &operator<<(std::ostream &os, const std::multimap<Key, Val> &m)
-{
-    return outputCon(os, m);
+std::ostream &operator<<(std::ostream &os, const std::multimap<Key, Val> &m) {
+  return outputCon(os, m);
 }
 #endif
 
@@ -259,9 +236,8 @@ std::ostream &operator<<(std::ostream &os, const std::multimap<Key, Val> &m)
  */
 template <typename Key, typename Val>
 std::ostream &operator<<(std::ostream &os,
-                         const std::unordered_map<Key, Val> &m)
-{
-    return outputCon(os, m);
+                         const std::unordered_map<Key, Val> &m) {
+  return outputCon(os, m);
 }
 
 #endif
@@ -273,9 +249,8 @@ std::ostream &operator<<(std::ostream &os,
  */
 template <typename Key, typename Val>
 std::ostream &operator<<(std::ostream &os,
-                         const std::unordered_multimap<Key, Val> &m)
-{
-    return outputCon(os, m);
+                         const std::unordered_multimap<Key, Val> &m) {
+  return outputCon(os, m);
 }
 #endif
 
@@ -289,9 +264,8 @@ std::ostream &operator<<(std::ostream &os,
  * @brief overload the operator '<<' for std::set
  */
 template <typename Val>
-std::ostream &operator<<(std::ostream &os, const std::set<Val> &s)
-{
-    return outputCon(os, s);
+std::ostream &operator<<(std::ostream &os, const std::set<Val> &s) {
+  return outputCon(os, s);
 }
 #endif
 
@@ -301,9 +275,8 @@ std::ostream &operator<<(std::ostream &os, const std::set<Val> &s)
  * @brief overload the operator '<<' for std::unordered_set
  */
 template <typename Val>
-std::ostream &operator<<(std::ostream &os, const std::unordered_set<Val> &s)
-{
-    return outputCon(os, s);
+std::ostream &operator<<(std::ostream &os, const std::unordered_set<Val> &s) {
+  return outputCon(os, s);
 }
 #endif
 
@@ -313,9 +286,8 @@ std::ostream &operator<<(std::ostream &os, const std::unordered_set<Val> &s)
  * @brief overload the operator '<<' for std::multiset
  */
 template <typename Val>
-std::ostream &operator<<(std::ostream &os, const std::multiset<Val> &s)
-{
-    return outputCon(os, s);
+std::ostream &operator<<(std::ostream &os, const std::multiset<Val> &s) {
+  return outputCon(os, s);
 }
 #endif
 
@@ -326,9 +298,8 @@ std::ostream &operator<<(std::ostream &os, const std::multiset<Val> &s)
  */
 template <typename Val>
 std::ostream &operator<<(std::ostream &os,
-                         const std::unordered_multiset<Val> &s)
-{
-    return outputCon(os, s);
+                         const std::unordered_multiset<Val> &s) {
+  return outputCon(os, s);
 }
 #endif
 #pragma endregion
@@ -341,9 +312,8 @@ std::ostream &operator<<(std::ostream &os,
  * @brief overload the operator '<<' for std::vector
  */
 template <typename Val>
-std::ostream &operator<<(std::ostream &os, const std::vector<Val> &s)
-{
-    return outputCon(os, s);
+std::ostream &operator<<(std::ostream &os, const std::vector<Val> &s) {
+  return outputCon(os, s);
 }
 #endif
 
@@ -353,9 +323,8 @@ std::ostream &operator<<(std::ostream &os, const std::vector<Val> &s)
  * @brief overload the operator '<<' for std::list
  */
 template <typename Val>
-std::ostream &operator<<(std::ostream &os, const std::list<Val> &s)
-{
-    return outputCon(os, s);
+std::ostream &operator<<(std::ostream &os, const std::list<Val> &s) {
+  return outputCon(os, s);
 }
 #endif
 
@@ -365,9 +334,8 @@ std::ostream &operator<<(std::ostream &os, const std::list<Val> &s)
  * @brief overload the operator '<<' for std::deque
  */
 template <typename Val>
-std::ostream &operator<<(std::ostream &os, const std::deque<Val> &s)
-{
-    return outputCon(os, s);
+std::ostream &operator<<(std::ostream &os, const std::deque<Val> &s) {
+  return outputCon(os, s);
 }
 #endif
 
@@ -377,13 +345,12 @@ std::ostream &operator<<(std::ostream &os, const std::deque<Val> &s)
  * @brief overload the operator '<<' for std::array
  */
 template <typename Val, std::size_t Size>
-std::ostream &operator<<(std::ostream &os, const std::array<Val, Size> &s)
-{
-    os << '[';
-    for (int i = 0; i != s.size() - 1; ++i)
-        os << s[i] << ns_log::ns_priv::splitor;
-    os << s.back() << ']';
-    return os;
+std::ostream &operator<<(std::ostream &os, const std::array<Val, Size> &s) {
+  os << '[';
+  for (int i = 0; i != s.size() - 1; ++i)
+    os << s[i] << ns_log::ns_priv::splitor;
+  os << s.back() << ']';
+  return os;
 }
 #endif
 
@@ -393,22 +360,19 @@ std::ostream &operator<<(std::ostream &os, const std::array<Val, Size> &s)
  * @brief overload the operator '<<' for std::stack
  */
 template <typename Val>
-std::ostream &operator<<(std::ostream &os, const std::stack<Val> &s)
-{
-    if (s.empty())
-    {
-        os << "[(empty)]";
-        return os;
-    }
-    os << "[(top) ";
-    auto cs = s;
-    while (cs.size() != 1)
-    {
-        os << cs.top() << ns_log::ns_priv::splitor;
-        cs.pop();
-    }
-    os << cs.top() << "]";
+std::ostream &operator<<(std::ostream &os, const std::stack<Val> &s) {
+  if (s.empty()) {
+    os << "[(empty)]";
     return os;
+  }
+  os << "[(top) ";
+  auto cs = s;
+  while (cs.size() != 1) {
+    os << cs.top() << ns_log::ns_priv::splitor;
+    cs.pop();
+  }
+  os << cs.top() << "]";
+  return os;
 }
 #endif
 
@@ -418,49 +382,44 @@ std::ostream &operator<<(std::ostream &os, const std::stack<Val> &s)
  * @brief overload the operator '<<' for std::queue
  */
 template <typename Val>
-std::ostream &operator<<(std::ostream &os, const std::queue<Val> &q)
-{
-    if (q.empty())
-    {
-        os << "[(empty)]";
-        return os;
-    }
-    os << "[(front) ";
-    auto cq = q;
-    while (cq.size() != 1)
-    {
-        os << cq.front() << ns_log::ns_priv::splitor;
-        cq.pop();
-    }
-    os << cq.front() << "]";
+std::ostream &operator<<(std::ostream &os, const std::queue<Val> &q) {
+  if (q.empty()) {
+    os << "[(empty)]";
     return os;
+  }
+  os << "[(front) ";
+  auto cq = q;
+  while (cq.size() != 1) {
+    os << cq.front() << ns_log::ns_priv::splitor;
+    cq.pop();
+  }
+  os << cq.front() << "]";
+  return os;
 }
 #endif
 
 #pragma endregion
 
-namespace ns_log
-{
-    /**
-     * @brief Set the current ostream
-     *
-     * @param os the ostream
-     */
-    static void setCurOS(std::ostream &os) { ns_priv::logerOS = &os; }
+namespace ns_log {
+/**
+ * @brief Set the current ostream
+ *
+ * @param os the ostream
+ */
+static void setCurOS(std::ostream &os) { ns_priv::logerOS = &os; }
 
-    /**
-     * @brief Set the splitor for container output format
-     */
-    static void setSplitor(const std::string &sp) { ns_log::ns_priv::splitor = sp; }
+/**
+ * @brief Set the splitor for container output format
+ */
+static void setSplitor(const std::string &sp) { ns_log::ns_priv::splitor = sp; }
 
-    /**
-     * @brief Set the firName and sedName for std::pair
-     */
-    static void setFirSedName(const std::string &firstName,
-                              const std::string &secondName)
-    {
-        ns_log::ns_priv::firName = firstName, ns_log::ns_priv::sedName = secondName;
-    }
+/**
+ * @brief Set the firName and sedName for std::pair
+ */
+static void setFirSedName(const std::string &firstName,
+                          const std::string &secondName) {
+  ns_log::ns_priv::firName = firstName, ns_log::ns_priv::sedName = secondName;
+}
 
 /**
  * @brief the main message type macroes
@@ -481,4 +440,4 @@ namespace ns_log
 
 #define TEXT(...) ns_log::ns_priv::__print__(__VA_ARGS__)
 
-} // namespace ns_log
+}  // namespace ns_log
