@@ -5,35 +5,37 @@
  * @author csl (3079625093@qq.com)
  * @version 0.1
  * @date 2022-01-27
- * 
+ *
  * @copyright Copyright (c) 2022
  */
 
+#include <chrono>
 #include <iostream>
 #include <string>
-#include <vector>
 #include <tuple>
-#include <chrono>
+#include <vector>
 
 /**
- * @brief the main message type macroes: everything that overrides the operator '<<' can use the macroes.
- * [1] INFO    {Information; Message; real-time info Of information; Of messages; Informative}
- * [2] PROCESS {The process of achieving a goal; The development of things, especially the steps of natural change;}
- * [3] WARNING {about possible accidents, etc.; a warning, warning, etc about the punishment to be suffered}
- * [4] ERROR   {Error; Errors; Fallacy;}
+ * @brief the main message type macroes: everything that overrides the operator
+ * '<<' can use the macroes. [1] INFO    {Information; Message; real-time info
+ * Of information; Of messages; Informative} [2] PROCESS {The process of
+ * achieving a goal; The development of things, especially the steps of natural
+ * change;} [3] WARNING {about possible accidents, etc.; a warning, warning, etc
+ * about the punishment to be suffered} [4] ERROR   {Error; Errors; Fallacy;}
  * [5] FATAL   {Fatal; Catastrophic; Destructive; Cause failure}
- * 
+ *
  * @brief the main methods.
  * [1] static void setCurOS(std::ostream &os)
  * [2] static void setSplitor(const std::string &sp)
- * [3] static void setFirSedName(const std::string &firstName, const std::string &secondName)
- * 
+ * [3] static void setFirSedName(const std::string &firstName, const std::string
+ * &secondName)
+ *
  * @brief output format for containers in the STL.
  * [1] std::pair
  * [2] std::map std::multimap std::unordered_map std::unordered_multimap
  * [3] std::set std::multiset std::unordered_set std::unordered_multiset
  * [4] std::vector std::list std::deque std::array
- * 
+ *
  * @brief the macroes to control the using of the STL containers output format
  * [1] FORMAT_MAP FORMAT_MULTIMAP FORMAT_UNORDERED_MAP FORMAT_UNORDERED_MULTIMAP
  * [2] FORMAT_SET FORMAT_UNORDERED_SET FORMAT_MULTISET FORMAT_UNORDERED_MULTISET
@@ -50,8 +52,8 @@ namespace ns_log::ns_priv
 
     /**
      * @brief Get the current ostream
-     * 
-     * @return std::ostream& 
+     *
+     * @return std::ostream&
      */
     static std::ostream &getCurOS() { return *(ns_priv::logerOS); }
 
@@ -68,8 +70,7 @@ namespace ns_log::ns_priv
         /**
          * @brief construct a new Logger object
          */
-        Logger(const std::string &desc)
-            : _desc(desc), _firCall(true) {}
+        Logger(const std::string &desc) : _desc(desc), _firCall(true) {}
 
         inline std::string &desc() { return this->_desc; }
         inline const std::string &desc() const { return this->_desc; }
@@ -85,7 +86,8 @@ namespace ns_log::ns_priv
             if (logerOS == &std::cout)
                 head = "\e[1m", tail = "\e[0m";
 #endif
-            ns_priv::getCurOS() << head << this->_desc << " [" << count << "]" << tail << '\n';
+            ns_priv::getCurOS() << head << this->_desc << " [" << count << "]" << tail
+                                << '\n';
             this->_firCall = true;
             return;
         }
@@ -104,7 +106,8 @@ namespace ns_log::ns_priv
                 if (logerOS == &std::cout)
                     head = "\e[1m", tail = "\e[0m";
 #endif
-                ns_priv::getCurOS() << head << this->_desc << " [" << count << "] " << argv << tail << '\n';
+                ns_priv::getCurOS() << head << this->_desc << " [" << count << "] "
+                                    << argv << tail << '\n';
             }
             else
             {
@@ -143,14 +146,16 @@ namespace ns_log::ns_priv
 
     protected:
         /**
-             * @brief get the time when the message is outputed
-             * 
-             * @return int64_t
-             */
+         * @brief get the time when the message is outputed
+         *
+         * @return int64_t
+         */
         static int64_t curTime()
         {
             auto now = std::chrono::system_clock::now();
-            return std::chrono::time_point_cast<std::chrono::seconds>(now).time_since_epoch().count();
+            return std::chrono::time_point_cast<std::chrono::seconds>(now)
+                .time_since_epoch()
+                .count();
         }
     };
 
@@ -173,7 +178,8 @@ namespace ns_log::ns_priv
         __print__(argvs...);
     }
 
-    static Logger info("[ info  ]"), process("[process]"), warning("[warning]"), error("[ error ]"), fatal("[ fatal ]");
+    static Logger info("[ info  ]"), process("[process]"), warning("[warning]"),
+        error("[ error ]"), fatal("[ fatal ]");
 
     /**
      * @brief params to control
@@ -194,7 +200,8 @@ namespace ns_log::ns_priv
 template <typename Key, typename Val>
 std::ostream &operator<<(std::ostream &os, const std::pair<Key, Val> &p)
 {
-    os << "{'" + ns_log::ns_priv::firName + "': " << p.first << ", '" + ns_log::ns_priv::sedName + "': " << p.second << '}';
+    os << "{'" + ns_log::ns_priv::firName + "': " << p.first
+       << ", '" + ns_log::ns_priv::sedName + "': " << p.second << '}';
     return os;
 }
 
@@ -251,7 +258,8 @@ std::ostream &operator<<(std::ostream &os, const std::multimap<Key, Val> &m)
  * @brief overload the operator '<<' for std::unordered_map
  */
 template <typename Key, typename Val>
-std::ostream &operator<<(std::ostream &os, const std::unordered_map<Key, Val> &m)
+std::ostream &operator<<(std::ostream &os,
+                         const std::unordered_map<Key, Val> &m)
 {
     return outputCon(os, m);
 }
@@ -264,7 +272,8 @@ std::ostream &operator<<(std::ostream &os, const std::unordered_map<Key, Val> &m
  * @brief overload the operator '<<' for std::unordered_multimap
  */
 template <typename Key, typename Val>
-std::ostream &operator<<(std::ostream &os, const std::unordered_multimap<Key, Val> &m)
+std::ostream &operator<<(std::ostream &os,
+                         const std::unordered_multimap<Key, Val> &m)
 {
     return outputCon(os, m);
 }
@@ -316,7 +325,8 @@ std::ostream &operator<<(std::ostream &os, const std::multiset<Val> &s)
  * @brief overload the operator '<<' for std::unordered_multiset
  */
 template <typename Val>
-std::ostream &operator<<(std::ostream &os, const std::unordered_multiset<Val> &s)
+std::ostream &operator<<(std::ostream &os,
+                         const std::unordered_multiset<Val> &s)
 {
     return outputCon(os, s);
 }
@@ -433,7 +443,7 @@ namespace ns_log
 {
     /**
      * @brief Set the current ostream
-     * 
+     *
      * @param os the ostream
      */
     static void setCurOS(std::ostream &os) { ns_priv::logerOS = &os; }
@@ -441,28 +451,27 @@ namespace ns_log
     /**
      * @brief Set the splitor for container output format
      */
-    static void setSplitor(const std::string &sp)
-    {
-        ns_log::ns_priv::splitor = sp;
-    }
+    static void setSplitor(const std::string &sp) { ns_log::ns_priv::splitor = sp; }
 
     /**
      * @brief Set the firName and sedName for std::pair
      */
-    static void setFirSedName(const std::string &firstName, const std::string &secondName)
+    static void setFirSedName(const std::string &firstName,
+                              const std::string &secondName)
     {
         ns_log::ns_priv::firName = firstName, ns_log::ns_priv::sedName = secondName;
     }
 
 /**
  * @brief the main message type macroes
- * 
- * [1] info    {Information; Message; real-time info Of information; Of messages; Informative}
- * [2] process {The process of achieving a goal; The development of things, especially the steps of natural change;}
- * [3] warning {about possible accidents, etc.; a warning, warning, etc about the punishment to be suffered}
- * [4] error   {Error; Errors; Fallacy;}
- * [5] fatal   {Fatal; Catastrophic; Destructive; Cause failure}
- * 
+ *
+ * [1] info    {Information; Message; real-time info Of information; Of
+ * messages; Informative} [2] process {The process of achieving a goal; The
+ * development of things, especially the steps of natural change;} [3] warning
+ * {about possible accidents, etc.; a warning, warning, etc about the punishment
+ * to be suffered} [4] error   {Error; Errors; Fallacy;} [5] fatal   {Fatal;
+ * Catastrophic; Destructive; Cause failure}
+ *
  */
 #define INFO(...) ns_log::ns_priv::info(__VA_ARGS__)
 #define PROCESS(...) ns_log::ns_priv::process(__VA_ARGS__)
