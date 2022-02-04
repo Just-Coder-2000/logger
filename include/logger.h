@@ -16,13 +16,22 @@
 #include <vector>
 
 /**
- * @brief the main message type macroes: everything that overrides the operator
- * '<<' can use the macroes. [1] INFO    {Information; Message; real-time info
- * Of information; Of messages; Informative} [2] PROCESS {The process of
- * achieving a goal; The development of things, especially the steps of natural
- * change;} [3] WARNING {about possible accidents, etc.; a warning, warning, etc
- * about the punishment to be suffered} [4] ERROR   {Error; Errors; Fallacy;}
- * [5] FATAL   {Fatal; Catastrophic; Destructive; Cause failure}
+ * @brief the main message type macroes:
+ * everything that overrides the operator '<<' can use the macroes.
+ *
+ * @param INFO
+ * {Information; Message; real-time info Of information; Of messages;
+ * Informative}
+ * @param PROCESS
+ * {The process of achieving a goal; The development of things, especially the
+ * steps of natural change;}
+ * @param WARNING
+ * {about possible accidents, etc.; a warning, warning, etc about the punishment
+ * to be suffered}
+ * @param ERROR
+ * {Error; Errors; Fallacy;}
+ * @param FATAL
+ * {Fatal; Catastrophic; Destructive; Cause failure}
  *
  * @brief the main methods.
  * [1] static void setCurOS(std::ostream &os)
