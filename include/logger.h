@@ -11,7 +11,9 @@
 
 #include <chrono>
 #include <iostream>
+#include <sstream>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -200,7 +202,7 @@ std::ostream &operator<<(std::ostream &os, const std::pair<Key, Val> &p) {
  * @brief output format for container
  */
 template <typename ConType>
-std::ostream &outputCon(std::ostream &os, const ConType &s) {
+std::ostream &orderedConer(std::ostream &os, const ConType &s) {
   os << '[';
   if (s.empty()) {
     os << "(empty)]";
@@ -212,6 +214,24 @@ std::ostream &outputCon(std::ostream &os, const ConType &s) {
   return os;
 }
 
+/**
+ * @brief output format for unordered container
+ */
+template <typename ConType>
+std::ostream &unorderedConer(std::ostream &os, const ConType &c) {
+  os << '[';
+  if (c.empty()) {
+    os << "(empty)]";
+    return os;
+  }
+  std::stringstream stream;
+  for (const auto &elem : c) stream << elem << ns_log::ns_priv::splitor;
+  std::string str = stream.str();
+  os << std::string_view(str.c_str(),
+                         str.size() - ns_log::ns_priv::splitor.size())
+     << ']';
+  return os;
+}
 #pragma endregion
 
 #pragma region map
@@ -223,7 +243,7 @@ std::ostream &outputCon(std::ostream &os, const ConType &s) {
  */
 template <typename Key, typename Val>
 std::ostream &operator<<(std::ostream &os, const std::map<Key, Val> &m) {
-  return outputCon(os, m);
+  return orderedConer(os, m);
 }
 #endif
 
@@ -234,7 +254,7 @@ std::ostream &operator<<(std::ostream &os, const std::map<Key, Val> &m) {
  */
 template <typename Key, typename Val>
 std::ostream &operator<<(std::ostream &os, const std::multimap<Key, Val> &m) {
-  return outputCon(os, m);
+  return orderedConer(os, m);
 }
 #endif
 
@@ -246,7 +266,7 @@ std::ostream &operator<<(std::ostream &os, const std::multimap<Key, Val> &m) {
 template <typename Key, typename Val>
 std::ostream &operator<<(std::ostream &os,
                          const std::unordered_map<Key, Val> &m) {
-  return outputCon(os, m);
+  return unorderedConer(os, m);
 }
 
 #endif
@@ -259,7 +279,7 @@ std::ostream &operator<<(std::ostream &os,
 template <typename Key, typename Val>
 std::ostream &operator<<(std::ostream &os,
                          const std::unordered_multimap<Key, Val> &m) {
-  return outputCon(os, m);
+  return unorderedConer(os, m);
 }
 #endif
 
@@ -274,7 +294,7 @@ std::ostream &operator<<(std::ostream &os,
  */
 template <typename Val>
 std::ostream &operator<<(std::ostream &os, const std::set<Val> &s) {
-  return outputCon(os, s);
+  return orderedConer(os, s);
 }
 #endif
 
@@ -285,7 +305,7 @@ std::ostream &operator<<(std::ostream &os, const std::set<Val> &s) {
  */
 template <typename Val>
 std::ostream &operator<<(std::ostream &os, const std::unordered_set<Val> &s) {
-  return outputCon(os, s);
+  return unorderedConer(os, s);
 }
 #endif
 
@@ -296,7 +316,7 @@ std::ostream &operator<<(std::ostream &os, const std::unordered_set<Val> &s) {
  */
 template <typename Val>
 std::ostream &operator<<(std::ostream &os, const std::multiset<Val> &s) {
-  return outputCon(os, s);
+  return orderedConer(os, s);
 }
 #endif
 
@@ -308,7 +328,7 @@ std::ostream &operator<<(std::ostream &os, const std::multiset<Val> &s) {
 template <typename Val>
 std::ostream &operator<<(std::ostream &os,
                          const std::unordered_multiset<Val> &s) {
-  return outputCon(os, s);
+  return unorderedConer(os, s);
 }
 #endif
 #pragma endregion
@@ -322,7 +342,7 @@ std::ostream &operator<<(std::ostream &os,
  */
 template <typename Val>
 std::ostream &operator<<(std::ostream &os, const std::vector<Val> &s) {
-  return outputCon(os, s);
+  return orderedConer(os, s);
 }
 #endif
 
@@ -333,7 +353,7 @@ std::ostream &operator<<(std::ostream &os, const std::vector<Val> &s) {
  */
 template <typename Val>
 std::ostream &operator<<(std::ostream &os, const std::list<Val> &s) {
-  return outputCon(os, s);
+  return orderedConer(os, s);
 }
 #endif
 
@@ -344,7 +364,7 @@ std::ostream &operator<<(std::ostream &os, const std::list<Val> &s) {
  */
 template <typename Val>
 std::ostream &operator<<(std::ostream &os, const std::deque<Val> &s) {
-  return outputCon(os, s);
+  return orderedConer(os, s);
 }
 #endif
 
