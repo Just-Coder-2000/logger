@@ -10,6 +10,7 @@
  */
 
 #include <chrono>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -55,136 +56,152 @@
  */
 
 namespace ns_log::ns_priv {
-/**
- * @brief the ostream
- */
-static std::ostream *logerOS = &(std::cout);
-
-/**
- * @brief Get the current ostream
- *
- * @return std::ostream&
- */
-static std::ostream &getCurOS() { return *(ns_priv::logerOS); }
-
-struct Logger {
- private:
   /**
-   * @brief the members
+   * @brief the ostream
    */
-  std::string _desc;
-  bool _firCall;
-
- public:
-  /**
-   * @brief construct a new Logger object
-   */
-  Logger(const std::string &desc) : _desc(desc), _firCall(true) {}
-
-  inline std::string &desc() { return this->_desc; }
-  inline const std::string &desc() const { return this->_desc; }
+  static std::ostream *logerOS = &(std::cout);
 
   /**
-   * @brief overload the operator '()'
+   * @brief Get the current ostream
+   *
+   * @return std::ostream&
    */
-  void operator()() {
-    std::string head(""), tail("");
-    auto count = Logger::curTime();
-#ifdef __linux__
-    if (logerOS == &std::cout) head = "\e[1m", tail = "\e[0m";
-#endif
-    ns_priv::getCurOS() << head << this->_desc << " [" << count << "]" << tail
-                        << '\n';
-    this->_firCall = true;
-    return;
-  }
+  static std::ostream &getCurOS() { return *(ns_priv::logerOS); }
 
-  /**
-   * @brief overload the operator '()'
-   */
-  template <typename ArgvType>
-  void operator()(const ArgvType &argv) {
-    if (this->_firCall) {
+  struct Logger {
+  private:
+    /**
+     * @brief the members
+     */
+    std::string _desc;
+    bool _firCall;
+
+  public:
+    /**
+     * @brief construct a new Logger object
+     */
+    Logger(const std::string &desc) : _desc(desc), _firCall(true) {}
+
+    inline std::string &desc() { return this->_desc; }
+    inline const std::string &desc() const { return this->_desc; }
+
+    /**
+     * @brief overload the operator '()'
+     */
+    void operator()() {
+      std::stringstream stream;
+      stream << std::fixed << std::setprecision(3);
       std::string head(""), tail("");
       auto count = Logger::curTime();
 #ifdef __linux__
-      if (logerOS == &std::cout) head = "\e[1m", tail = "\e[0m";
+      if (logerOS == &std::cout)
+        head = "\e[1m", tail = "\e[0m";
 #endif
-      ns_priv::getCurOS() << head << this->_desc << " [" << count << "] "
-                          << argv << tail << '\n';
-    } else {
-      std::string tail("");
-#ifdef __linux__
-      if (logerOS == &std::cout) tail = "\e[0m";
-#endif
-      ns_priv::getCurOS() << argv << tail << '\n';
+      stream << head << this->_desc << " [" << count << "]" << tail
+             << '\n';
+      ns_priv::getCurOS() << stream.str();
+      this->_firCall = true;
+      return;
     }
-    this->_firCall = true;
+
+    /**
+     * @brief overload the operator '()'
+     */
+    template <typename ArgvType>
+    void operator()(const ArgvType &argv) {
+      std::stringstream stream;
+      stream << std::fixed << std::setprecision(3);
+      if (this->_firCall) {
+        std::string head(""), tail("");
+        auto count = Logger::curTime();
+#ifdef __linux__
+        if (logerOS == &std::cout)
+          head = "\e[1m", tail = "\e[0m";
+#endif
+        stream << head << this->_desc << " [" << count << "] "
+               << argv << tail << '\n';
+        ns_priv::getCurOS() << stream.str();
+      } else {
+        std::string tail("");
+#ifdef __linux__
+        if (logerOS == &std::cout)
+          tail = "\e[0m";
+#endif
+        stream << argv << tail << '\n';
+        ns_priv::getCurOS() << stream.str();
+      }
+      this->_firCall = true;
+      return;
+    }
+
+    /**
+     * @brief overload the operator '()'
+     */
+    template <typename ArgvType, typename... ArgvsType>
+    void operator()(const ArgvType &argv, const ArgvsType &...argvs) {
+      std::stringstream stream;
+      stream << std::fixed << std::setprecision(3);
+      if (this->_firCall) {
+        this->_firCall = false;
+        std::string head("");
+        auto count = Logger::curTime();
+#ifdef __linux__
+        if (logerOS == &std::cout)
+          head = "\e[1m";
+#endif
+        stream << head << this->_desc << " [" << count << "] "
+               << argv;
+        ns_priv::getCurOS() << stream.str();
+      } else {
+        stream << argv;
+        ns_priv::getCurOS() << stream.str();
+      }
+      return (*this)(argvs...);
+    }
+
+  protected:
+    /**
+     * @brief get the time when the message is outputed
+     *
+     * @return int64_t
+     */
+    static double curTime() {
+      auto now = std::chrono::system_clock::now();
+      return std::chrono::time_point_cast<std::chrono::duration<double>>(now)
+          .time_since_epoch()
+          .count();
+    }
+  };
+
+  void __print__() {
+    getCurOS() << '\n';
     return;
   }
 
-  /**
-   * @brief overload the operator '()'
-   */
+  template <typename ArgvType>
+  void __print__(const ArgvType &argv) {
+    getCurOS() << argv << '\n';
+  }
+
   template <typename ArgvType, typename... ArgvsType>
-  void operator()(const ArgvType &argv, const ArgvsType &...argvs) {
-    if (this->_firCall) {
-      this->_firCall = false;
-      std::string head("");
-      auto count = Logger::curTime();
-#ifdef __linux__
-      if (logerOS == &std::cout) head = "\e[1m";
-#endif
-      ns_priv::getCurOS() << head << this->_desc << " [" << count << "] "
-                          << argv;
-    } else
-      ns_priv::getCurOS() << argv;
-    return (*this)(argvs...);
+  void __print__(const ArgvType &argv, const ArgvsType &...argvs) {
+    getCurOS() << argv;
+    __print__(argvs...);
   }
 
- protected:
+  static Logger info("[ info  ]"), process("[process]"), warning("[warning]"),
+      error("[ error ]"), fatal("[ fatal ]");
+
   /**
-   * @brief get the time when the message is outputed
-   *
-   * @return int64_t
+   * @brief params to control
+   * @param splitor the splitor to split the elements
+   * @param firName the describe name for the first element of the std::pair
+   * @param sedName the describe name for the second element of the std::pair
    */
-  static int64_t curTime() {
-    auto now = std::chrono::system_clock::now();
-    return std::chrono::time_point_cast<std::chrono::seconds>(now)
-        .time_since_epoch()
-        .count();
-  }
-};
-
-void __print__() {
-  getCurOS() << '\n';
-  return;
-}
-
-template <typename ArgvType>
-void __print__(const ArgvType &argv) {
-  getCurOS() << argv << '\n';
-}
-
-template <typename ArgvType, typename... ArgvsType>
-void __print__(const ArgvType &argv, const ArgvsType &...argvs) {
-  getCurOS() << argv;
-  __print__(argvs...);
-}
-
-static Logger info("[ info  ]"), process("[process]"), warning("[warning]"),
-    error("[ error ]"), fatal("[ fatal ]");
-
-/**
- * @brief params to control
- * @param splitor the splitor to split the elements
- * @param firName the describe name for the first element of the std::pair
- * @param sedName the describe name for the second element of the std::pair
- */
-static std::string splitor(", ");
-static std::string firName("fir");
-static std::string sedName("sed");
-}  // namespace ns_log::ns_priv
+  static std::string splitor(", ");
+  static std::string firName("fir");
+  static std::string sedName("sed");
+} // namespace ns_log::ns_priv
 
 #pragma region output for container
 
@@ -209,7 +226,8 @@ std::ostream &orderedConer(std::ostream &os, const ConType &s) {
     return os;
   }
   auto iter = s.cbegin();
-  for (; iter != (--s.cend()); ++iter) os << *iter << ns_log::ns_priv::splitor;
+  for (; iter != (--s.cend()); ++iter)
+    os << *iter << ns_log::ns_priv::splitor;
   os << *iter << ']';
   return os;
 }
@@ -225,7 +243,8 @@ std::ostream &unorderedConer(std::ostream &os, const ConType &c) {
     return os;
   }
   std::stringstream stream;
-  for (const auto &elem : c) stream << elem << ns_log::ns_priv::splitor;
+  for (const auto &elem : c)
+    stream << elem << ns_log::ns_priv::splitor;
   std::string str = stream.str();
   os << std::string_view(str.c_str(),
                          str.size() - ns_log::ns_priv::splitor.size())
@@ -430,25 +449,25 @@ std::ostream &operator<<(std::ostream &os, const std::queue<Val> &q) {
 #pragma endregion
 
 namespace ns_log {
-/**
- * @brief Set the current ostream
- *
- * @param os the ostream
- */
-static void setCurOS(std::ostream &os) { ns_priv::logerOS = &os; }
+  /**
+   * @brief Set the current ostream
+   *
+   * @param os the ostream
+   */
+  static void setCurOS(std::ostream &os) { ns_priv::logerOS = &os; }
 
-/**
- * @brief Set the splitor for container output format
- */
-static void setSplitor(const std::string &sp) { ns_log::ns_priv::splitor = sp; }
+  /**
+   * @brief Set the splitor for container output format
+   */
+  static void setSplitor(const std::string &sp) { ns_log::ns_priv::splitor = sp; }
 
-/**
- * @brief Set the firName and sedName for std::pair
- */
-static void setFirSedName(const std::string &firstName,
-                          const std::string &secondName) {
-  ns_log::ns_priv::firName = firstName, ns_log::ns_priv::sedName = secondName;
-}
+  /**
+   * @brief Set the firName and sedName for std::pair
+   */
+  static void setFirSedName(const std::string &firstName,
+                            const std::string &secondName) {
+    ns_log::ns_priv::firName = firstName, ns_log::ns_priv::sedName = secondName;
+  }
 
 /**
  * @brief the main message type macroes
@@ -469,4 +488,4 @@ static void setFirSedName(const std::string &firstName,
 
 #define TEXT(...) ns_log::ns_priv::__print__(__VA_ARGS__)
 
-}  // namespace ns_log
+} // namespace ns_log
