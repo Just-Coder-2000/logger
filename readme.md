@@ -1,9 +1,12 @@
-# Simple Logger With Color
+# Simple Logger
 >___Author : csl___   
 
 >___E-Mail : 3079625093@qq.com___   
 
-## Override
+[TOC]
+
+## 1. Override
+
 This is just a simple logger, usage is also simple.
 ```ABAP                                   
 _|                                                          
@@ -54,56 +57,44 @@ format macroes for STL containers
 
 </center>
 
-## Usage
+## 2. Usage
 ```cpp
-#define FORMAT_ARRAY
-#define FORMAT_LIST
-#define FORMAT_VECTOR
-
-#include "logger.h"
-
-void log()
-{
-    INFO("this is a list<int>: ", std::list<int>{1, 2, 3, 4, 5});
-    TEXT("this is a text message: ", "hello, ", "world.");
-    INFO("this is a array<int, 3>: ", std::array<int, 3>{1, 4, 5});
-    INFO("this is a empty vector<double>: ", std::vector<double>{});
-    TEXT();
-    PROCESS("we all konw that PI equals to ", M_PI);
-    INFO();
-    WARNING("here is a 'Info' type struct object: ", Info(12, 13.4f));
-    ERROR("the ofstream is open? (", true, ")");
-    FATAL("hello, world. ", "My E-Mail is ", "[3079625093@qq.com].");
+void cos() {
+  INFO("this is a 'info' message");
+  PROCESS("we all know that 'pi' equals to ", M_PI);
+  WARNING("It's time to eat!");
+  ERROR("the file hasn't been closed! (", false, ")");
+  FATAL("the vector elems are: ", std::vector<int>{1, 5, 6, 2, 4, 78});
 }
 
-int main(int argc, char const *argv[])
-{
-    /**
-     * @brief std::cout
-     */
-    ::log();
+void fos() {
+  ns_log::FLogger flogger("../log.log");
+  flogger.info("this is a 'info' message");
+  flogger.process("we all know that 'pi' equals to ", M_PI);
+  flogger.warning("It's time to eat!");
+  flogger.error("the file hasn't been closed! (", false, ")");
+  flogger.fatal("the vector elems are: ", std::vector<int>{1, 5, 6, 2, 4, 78});
+}
 
-    /**
-     * @brief std::ofstream
-     */
-    std::ofstream ofs("../log.log");
-    ns_log::setCurOS(ofs);
-    ::log();
-    ofs.close();
-    return 0;
+int main(int argc, char const *argv[]) {
+  /**
+   * @brief std::cout
+   */
+  ::cos();
+
+  /**
+   * @brief std::ofstream
+   */
+  ::fos();
+  return 0;
 }
 ```
 
 the log file is [here](./log.log)
 ```log
-[ info  ] [9:46:28] this is a list<int>: [1, 2, 3, 4, 5]
-this is a text message: hello, world.
-[ info  ] [9:46:28] this is a array<int, 3>: [1, 4, 5]
-[ info  ] [9:46:28] this is a empty vector<double>: [(empty)]
-
-[process] [9:46:28] we all konw that PI equals to 3.14159
-[ info  ] [9:46:28]
-[warning] [9:46:28] here is a 'Info' type struct object: {'id': 12, 'dur': 13.4}
-[ error ] [9:46:28] the ofstream is open? (1)
-[ fatal ] [9:46:28] hello, world. My E-Mail is [3079625093@qq.com].
+[  info   ]-[ 1645108700.679 ] this is a 'info' message
+[ process ]-[ 1645108700.679 ] we all know that 'pi' equals to 3.14159
+[ warning ]-[ 1645108700.679 ] It's time to eat!
+[  error  ]-[ 1645108700.679 ] the file hasn't been closed! (0)
+[  error  ]-[ 1645108700.679 ] the vector elems are: [1, 5, 6, 2, 4, 78]
 ```

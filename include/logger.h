@@ -10,12 +10,12 @@
  */
 
 #include <chrono>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <string_view>
-#include <tuple>
 #include <vector>
 
 /**
@@ -55,111 +55,51 @@
  * [4] FORMAT_STACK FORMAT_QUEUE
  */
 
-namespace ns_log::ns_priv {
-  /**
-   * @brief the ostream
-   */
-  static std::ostream *logerOS = &(std::cout);
-
-  /**
-   * @brief Get the current ostream
-   *
-   * @return std::ostream&
-   */
-  static std::ostream &getCurOS() { return *(ns_priv::logerOS); }
-
-  struct Logger {
-  private:
+namespace ns_log {
+  class Logger {
+  protected:
     /**
      * @brief the members
      */
-    std::string _desc;
-    bool _firCall;
+    std::ostream *_logerOS;
 
   public:
     /**
      * @brief construct a new Logger object
      */
-    Logger(const std::string &desc) : _desc(desc), _firCall(true) {}
+    Logger(std::ostream *os) : _logerOS(os) {}
 
-    inline std::string &desc() { return this->_desc; }
-    inline const std::string &desc() const { return this->_desc; }
+    virtual ~Logger() {}
 
-    /**
-     * @brief overload the operator '()'
-     */
-    void operator()() {
+    template <typename... ArgvsType>
+    Logger &operator()(const std::string &desc, const ArgvsType &...argvs) {
       std::stringstream stream;
       stream << std::fixed << std::setprecision(3);
-      std::string head(""), tail("");
-      auto count = Logger::curTime();
-#ifdef __linux__
-      if (logerOS == &std::cout)
-        head = "\e[1m", tail = "\e[0m";
-#endif
-      stream << head << this->_desc << " [" << count << "]" << tail
-             << '\n';
-      ns_priv::getCurOS() << stream.str();
-      this->_firCall = true;
-      return;
-    }
-
-    /**
-     * @brief overload the operator '()'
-     */
-    template <typename ArgvType>
-    void operator()(const ArgvType &argv) {
-      std::stringstream stream;
-      stream << std::fixed << std::setprecision(3);
-      if (this->_firCall) {
-        std::string head(""), tail("");
-        auto count = Logger::curTime();
-#ifdef __linux__
-        if (logerOS == &std::cout)
-          head = "\e[1m", tail = "\e[0m";
-#endif
-        stream << head << this->_desc << " [" << count << "] "
-               << argv << tail << '\n';
-        ns_priv::getCurOS() << stream.str();
-      } else {
-        std::string tail("");
-#ifdef __linux__
-        if (logerOS == &std::cout)
-          tail = "\e[0m";
-#endif
-        stream << argv << tail << '\n';
-        ns_priv::getCurOS() << stream.str();
-      }
-      this->_firCall = true;
-      return;
-    }
-
-    /**
-     * @brief overload the operator '()'
-     */
-    template <typename ArgvType, typename... ArgvsType>
-    void operator()(const ArgvType &argv, const ArgvsType &...argvs) {
-      std::stringstream stream;
-      stream << std::fixed << std::setprecision(3);
-      if (this->_firCall) {
-        this->_firCall = false;
-        std::string head("");
-        auto count = Logger::curTime();
-#ifdef __linux__
-        if (logerOS == &std::cout)
-          head = "\e[1m";
-#endif
-        stream << head << this->_desc << " [" << count << "] "
-               << argv;
-        ns_priv::getCurOS() << stream.str();
-      } else {
-        stream << argv;
-        ns_priv::getCurOS() << stream.str();
-      }
-      return (*this)(argvs...);
+      stream << "[ " << desc << " ]-[ " << Logger::curTime() << " ] ";
+      (*this->_logerOS) << stream.str();
+      Logger::__print__(*this->_logerOS, argvs...);
+      return *this;
     }
 
   protected:
+    static void __print__(std::ostream &os) {
+      os << '\n';
+      return;
+    }
+
+    template <typename ArgvType>
+    static void __print__(std::ostream &os, const ArgvType &argv) {
+      os << argv << '\n';
+      return;
+    }
+
+    template <typename ArgvType, typename... ArgvsType>
+    static void __print__(std::ostream &os, const ArgvType &argv, const ArgvsType &...argvs) {
+      os << argv;
+      Logger::__print__(os, argvs...);
+      return;
+    }
+
     /**
      * @brief get the time when the message is outputed
      *
@@ -173,35 +113,136 @@ namespace ns_log::ns_priv {
     }
   };
 
-  void __print__() {
-    getCurOS() << '\n';
-    return;
-  }
+  class FLogger : public Logger {
+  private:
+    std::size_t *_count;
 
-  template <typename ArgvType>
-  void __print__(const ArgvType &argv) {
-    getCurOS() << argv << '\n';
-  }
+  public:
+    FLogger(const std::string &filename)
+        : Logger(new std::ofstream(filename, std::ios::out)), _count(new std::size_t(1)) {
+    }
 
-  template <typename ArgvType, typename... ArgvsType>
-  void __print__(const ArgvType &argv, const ArgvsType &...argvs) {
-    getCurOS() << argv;
-    __print__(argvs...);
-  }
+    /**
+     * @brief a smart shared file logger
+     */
+    ~FLogger() {
+      if (this->_logerOS != nullptr && this->_count != nullptr) {
+        --(*this->_count);
+        if (*this->_count == 0) {
+          std::ofstream *ofs = dynamic_cast<std::ofstream *>(this->_logerOS);
+          ofs->close();
+          delete this->_logerOS;
+          delete this->_count;
+          this->_logerOS = nullptr;
+          this->_count = nullptr;
+        }
+      }
+    }
 
-  static Logger info("[ info  ]"), process("[process]"), warning("[warning]"),
-      error("[ error ]"), fatal("[ fatal ]");
+    FLogger(const FLogger &flogger) : Logger(flogger._logerOS) {
+      this->_count = flogger._count;
+      ++(*this->_count);
+    }
 
-  /**
-   * @brief params to control
-   * @param splitor the splitor to split the elements
-   * @param firName the describe name for the first element of the std::pair
-   * @param sedName the describe name for the second element of the std::pair
-   */
-  static std::string splitor(", ");
-  static std::string firName("fir");
-  static std::string sedName("sed");
-} // namespace ns_log::ns_priv
+    FLogger(FLogger &&flogger) : Logger(flogger._logerOS) {
+      this->_count = flogger._count;
+
+      flogger._logerOS = nullptr;
+      flogger._count = nullptr;
+    }
+
+    FLogger &operator=(const FLogger &flogger) {
+      this->_logerOS = flogger._logerOS;
+      this->_count = flogger._count;
+      ++(*this->_count);
+      return *this;
+    }
+
+    FLogger &operator=(FLogger &&flogger) {
+      this->_logerOS = flogger._logerOS;
+      this->_count = flogger._count;
+
+      flogger._logerOS = nullptr;
+      flogger._count = nullptr;
+      return *this;
+    }
+
+    template <typename... ArgvsType>
+    FLogger &info(const ArgvsType &...argvs) {
+      (*this)(" info  ", argvs...);
+      return *this;
+    }
+
+    template <typename... ArgvsType>
+    FLogger &warning(const ArgvsType &...argvs) {
+      (*this)("warning", argvs...);
+      return *this;
+    }
+
+    template <typename... ArgvsType>
+    FLogger &process(const ArgvsType &...argvs) {
+      (*this)("process", argvs...);
+      return *this;
+    }
+
+    template <typename... ArgvsType>
+    FLogger &fatal(const ArgvsType &...argvs) {
+      (*this)(" fatal ", argvs...);
+      return *this;
+    }
+
+    template <typename... ArgvsType>
+    FLogger &error(const ArgvsType &...argvs) {
+      (*this)(" error ", argvs...);
+      return *this;
+    }
+  };
+
+  namespace ns_priv {
+    static Logger _cos_(&std::cout);
+
+    /**
+     * @brief params to control
+     * @param _splitor_ the splitor to split the elements
+     * @param _firName_ the describe name for the first element of the std::pair
+     * @param _sedName_ the describe name for the second element of the std::pair
+     */
+    static std::string _splitor_(", ");
+    static std::string _firName_("fir");
+    static std::string _sedName_("sed");
+
+    /**
+     * @brief Set the splitor for container output format
+     */
+    static void setSplitor(const std::string &sp) { ns_log::ns_priv::_splitor_ = sp; }
+
+    /**
+     * @brief Set the firName and sedName for std::pair
+     */
+    static void setFirSedName(const std::string &firstName,
+                              const std::string &secondName) {
+      ns_log::ns_priv::_firName_ = firstName, ns_log::ns_priv::_sedName_ = secondName;
+    }
+  } // namespace ns_priv
+
+/**
+ * @brief the main message type macroes
+ *
+ * [1] info    {Information; Message; real-time info Of information; Of
+ * messages; Informative} [2] process {The process of achieving a goal; The
+ * development of things, especially the steps of natural change;} [3] warning
+ * {about possible accidents, etc.; a warning, warning, etc about the punishment
+ * to be suffered} [4] error   {Error; Errors; Fallacy;} [5] fatal   {Fatal;
+ * Catastrophic; Destructive; Cause failure}
+ *
+ */
+#define INFO(...) ns_log::ns_priv::_cos_(" info  ", __VA_ARGS__)
+#define PROCESS(...) ns_log::ns_priv::_cos_("process", __VA_ARGS__)
+#define WARNING(...) ns_log::ns_priv::_cos_("warning", __VA_ARGS__)
+#define ERROR(...) ns_log::ns_priv::_cos_(" error ", __VA_ARGS__)
+#define FATAL(...) ns_log::ns_priv::_cos_(" fatal ", __VA_ARGS__)
+
+} // namespace ns_log
 
 #pragma region output for container
 
@@ -210,8 +251,8 @@ namespace ns_log::ns_priv {
  */
 template <typename Key, typename Val>
 std::ostream &operator<<(std::ostream &os, const std::pair<Key, Val> &p) {
-  os << "{'" + ns_log::ns_priv::firName + "': " << p.first
-     << ", '" + ns_log::ns_priv::sedName + "': " << p.second << '}';
+  os << "{'" + ns_log::ns_priv::_firName_ + "': " << p.first
+     << ", '" + ns_log::ns_priv::_sedName_ + "': " << p.second << '}';
   return os;
 }
 
@@ -227,7 +268,7 @@ std::ostream &orderedConer(std::ostream &os, const ConType &s) {
   }
   auto iter = s.cbegin();
   for (; iter != (--s.cend()); ++iter)
-    os << *iter << ns_log::ns_priv::splitor;
+    os << *iter << ns_log::ns_priv::_splitor_;
   os << *iter << ']';
   return os;
 }
@@ -244,10 +285,10 @@ std::ostream &unorderedConer(std::ostream &os, const ConType &c) {
   }
   std::stringstream stream;
   for (const auto &elem : c)
-    stream << elem << ns_log::ns_priv::splitor;
+    stream << elem << ns_log::ns_priv::_splitor_;
   std::string str = stream.str();
   os << std::string_view(str.c_str(),
-                         str.size() - ns_log::ns_priv::splitor.size())
+                         str.size() - ns_log::ns_priv::_splitor_.size())
      << ']';
   return os;
 }
@@ -396,7 +437,7 @@ template <typename Val, std::size_t Size>
 std::ostream &operator<<(std::ostream &os, const std::array<Val, Size> &s) {
   os << '[';
   for (int i = 0; i != s.size() - 1; ++i)
-    os << s[i] << ns_log::ns_priv::splitor;
+    os << s[i] << ns_log::ns_priv::_splitor_;
   os << s.back() << ']';
   return os;
 }
@@ -416,7 +457,7 @@ std::ostream &operator<<(std::ostream &os, const std::stack<Val> &s) {
   os << "[(top) ";
   auto cs = s;
   while (cs.size() != 1) {
-    os << cs.top() << ns_log::ns_priv::splitor;
+    os << cs.top() << ns_log::ns_priv::_splitor_;
     cs.pop();
   }
   os << cs.top() << "]";
@@ -438,7 +479,7 @@ std::ostream &operator<<(std::ostream &os, const std::queue<Val> &q) {
   os << "[(front) ";
   auto cq = q;
   while (cq.size() != 1) {
-    os << cq.front() << ns_log::ns_priv::splitor;
+    os << cq.front() << ns_log::ns_priv::_splitor_;
     cq.pop();
   }
   os << cq.front() << "]";
@@ -447,45 +488,3 @@ std::ostream &operator<<(std::ostream &os, const std::queue<Val> &q) {
 #endif
 
 #pragma endregion
-
-namespace ns_log {
-  /**
-   * @brief Set the current ostream
-   *
-   * @param os the ostream
-   */
-  static void setCurOS(std::ostream &os) { ns_priv::logerOS = &os; }
-
-  /**
-   * @brief Set the splitor for container output format
-   */
-  static void setSplitor(const std::string &sp) { ns_log::ns_priv::splitor = sp; }
-
-  /**
-   * @brief Set the firName and sedName for std::pair
-   */
-  static void setFirSedName(const std::string &firstName,
-                            const std::string &secondName) {
-    ns_log::ns_priv::firName = firstName, ns_log::ns_priv::sedName = secondName;
-  }
-
-/**
- * @brief the main message type macroes
- *
- * [1] info    {Information; Message; real-time info Of information; Of
- * messages; Informative} [2] process {The process of achieving a goal; The
- * development of things, especially the steps of natural change;} [3] warning
- * {about possible accidents, etc.; a warning, warning, etc about the punishment
- * to be suffered} [4] error   {Error; Errors; Fallacy;} [5] fatal   {Fatal;
- * Catastrophic; Destructive; Cause failure}
- *
- */
-#define INFO(...) ns_log::ns_priv::info(__VA_ARGS__)
-#define PROCESS(...) ns_log::ns_priv::process(__VA_ARGS__)
-#define WARNING(...) ns_log::ns_priv::warning(__VA_ARGS__)
-#define ERROR(...) ns_log::ns_priv::error(__VA_ARGS__)
-#define FATAL(...) ns_log::ns_priv::fatal(__VA_ARGS__)
-
-#define TEXT(...) ns_log::ns_priv::__print__(__VA_ARGS__)
-
-} // namespace ns_log
