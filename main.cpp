@@ -4,11 +4,11 @@
 #include <vector>
 
 void cos() {
-  INFO("this is a 'info' message");
-  PROCESS("we all know that 'pi' equals to ", M_PI);
-  WARNING("It's time to eat!");
-  ERROR("the file hasn't been closed! (", false, ")");
-  FATAL("the vector elems are: ", std::vector<int>{1, 5, 6, 2, 4, 78});
+  Info("this is a 'info' message");
+  Process("we all know that 'pi' equals to ", M_PI);
+  Warning("It's time to eat!");
+  Error("the file hasn't been closed! (", false, ")");
+  Fatal("the vector elems are: ", std::vector<int>{1, 5, 6, 2, 4, 78});
 }
 
 void fos() {

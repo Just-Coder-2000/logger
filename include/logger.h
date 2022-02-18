@@ -56,6 +56,9 @@
  */
 
 namespace ns_log {
+  /**
+   * @brief base logger
+   */
   class Logger {
   protected:
     /**
@@ -113,6 +116,9 @@ namespace ns_log {
     }
   };
 
+  /**
+   * @brief logger for file
+   */
   class FLogger : public Logger {
   private:
     std::size_t *_count;
@@ -238,19 +244,18 @@ namespace ns_log {
 /**
  * @brief the main message type macroes
  *
- * [1] info    {Information; Message; real-time info Of information; Of
- * messages; Informative} [2] process {The process of achieving a goal; The
- * development of things, especially the steps of natural change;} [3] warning
- * {about possible accidents, etc.; a warning, warning, etc about the punishment
- * to be suffered} [4] error   {Error; Errors; Fallacy;} [5] fatal   {Fatal;
- * Catastrophic; Destructive; Cause failure}
+ * [1] info    {Information; Message; real-time info Of information; Of messages; Informative}
+ * [2] process {The process of achieving a goal; The development of things, especially the steps of natural change;}
+ * [3] warning {about possible accidents, etc.; a warning, warning, etc about the punishment to be suffered}
+ * [4] error   {Error; Errors; Fallacy;}
+ * [5] fatal   {Fatal; Catastrophic; Destructive; Cause failure}
  *
  */
-#define INFO(...) ns_log::ns_priv::_cos_(" info  ", __VA_ARGS__)
-#define PROCESS(...) ns_log::ns_priv::_cos_("process", __VA_ARGS__)
-#define WARNING(...) ns_log::ns_priv::_cos_("warning", __VA_ARGS__)
-#define ERROR(...) ns_log::ns_priv::_cos_(" error ", __VA_ARGS__)
-#define FATAL(...) ns_log::ns_priv::_cos_(" fatal ", __VA_ARGS__)
+#define Info(...) ns_log::ns_priv::_cos_(" info  ", __VA_ARGS__)
+#define Process(...) ns_log::ns_priv::_cos_("process", __VA_ARGS__)
+#define Warning(...) ns_log::ns_priv::_cos_("warning", __VA_ARGS__)
+#define Error(...) ns_log::ns_priv::_cos_(" error ", __VA_ARGS__)
+#define Fatal(...) ns_log::ns_priv::_cos_(" fatal ", __VA_ARGS__)
 
 } // namespace ns_log
 
