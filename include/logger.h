@@ -75,7 +75,7 @@ namespace ns_log {
     Logger &operator()(const std::string &desc, const ArgvsType &...argvs) {
       std::stringstream stream;
       stream << std::fixed << std::setprecision(3);
-      stream << "[ " << desc << " ]-[ " << Logger::curTime() << " ] ";
+      stream << "[ \e[1m" << desc << "\e[0m ]-[ \e[1m" << Logger::curTime() << "\e[0m ] ";
       (*this->_logerOS) << stream.str();
       Logger::__print__(*this->_logerOS, argvs...);
       return *this;
@@ -164,6 +164,16 @@ namespace ns_log {
 
       flogger._logerOS = nullptr;
       flogger._count = nullptr;
+      return *this;
+    }
+
+    template <typename... ArgvsType>
+    Logger &operator()(const std::string &desc, const ArgvsType &...argvs) {
+      std::stringstream stream;
+      stream << std::fixed << std::setprecision(3);
+      stream << "[ " << desc << " ]-[ " << Logger::curTime() << " ] ";
+      (*this->_logerOS) << stream.str();
+      Logger::__print__(*this->_logerOS, argvs...);
       return *this;
     }
 
