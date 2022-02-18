@@ -59,12 +59,13 @@ format macroes for STL containers
 
 ## 2. Usage
 ```cpp
+
 void cos() {
-  INFO("this is a 'info' message");
-  PROCESS("we all know that 'pi' equals to ", M_PI);
-  WARNING("It's time to eat!");
-  ERROR("the file hasn't been closed! (", false, ")");
-  FATAL("the vector elems are: ", std::vector<int>{1, 5, 6, 2, 4, 78});
+  Info("this is a 'info' message");
+  Process("we all know that 'pi' equals to ", M_PI);
+  Warning("It's time to eat!");
+  Error("the file hasn't been closed! (", false, ")");
+  Fatal("the vector elems are: ", std::vector<int>{1, 5, 6, 2, 4, 78});
 }
 
 void fos() {
@@ -74,19 +75,6 @@ void fos() {
   flogger.warning("It's time to eat!");
   flogger.error("the file hasn't been closed! (", false, ")");
   flogger.fatal("the vector elems are: ", std::vector<int>{1, 5, 6, 2, 4, 78});
-}
-
-int main(int argc, char const *argv[]) {
-  /**
-   * @brief std::cout
-   */
-  ::cos();
-
-  /**
-   * @brief std::ofstream
-   */
-  ::fos();
-  return 0;
 }
 ```
 
