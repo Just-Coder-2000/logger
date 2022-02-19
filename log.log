@@ -1,6 +1,6 @@
-[  info   ]-[ 1645249195.619 ] this is a 'info' message
-[ process ]-[ 1645249195.619 ] we all know that 'pi' equals to 3.14159
-[ warning ]-[ 1645249195.619 ] It's time to eat!
-[  error  ]-[ 1645249195.619 ] the file hasn't been closed! (0)
-[  fatal  ]-[ 1645249195.619 ] the vector elems are: [1, 5, 6, 2, 4, 78]
-[  info   ]-[ 1645249195.619 ] the standard of the lang is: [{'python': 3.8}, {'cpp': std11}]
+[  info   ]-[ 1645249749.109 ] this is a 'info' message
+[ process ]-[ 1645249749.109 ] we all know that 'pi' equals to 3.14159
+[ warning ]-[ 1645249749.109 ] It's time to eat!
+[  error  ]-[ 1645249749.109 ] the file hasn't been closed! (0)
+[  fatal  ]-[ 1645249749.109 ] the vector elems are: [1, 5, 6, 2, 4, 78]
+[  info   ]-[ 1645249749.109 ] the standard of the lang is: [{'python': 3.8}, {'cpp': std11}]

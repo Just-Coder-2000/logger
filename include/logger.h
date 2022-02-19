@@ -275,7 +275,7 @@ template <typename ConType>
 std::ostream &orderedConer(std::ostream &os, const ConType &s) {
   os << '[';
   if (s.empty()) {
-    os << "(empty)]";
+    os << "'empty']";
     return os;
   }
   auto iter = s.cbegin();
@@ -292,7 +292,7 @@ template <typename ConType>
 std::ostream &unorderedConer(std::ostream &os, const ConType &c) {
   os << '[';
   if (c.empty()) {
-    os << "(empty)]";
+    os << "'empty']";
     return os;
   }
   std::stringstream stream;
@@ -463,10 +463,10 @@ std::ostream &operator<<(std::ostream &os, const std::array<Val, Size> &s) {
 template <typename Val>
 std::ostream &operator<<(std::ostream &os, const std::stack<Val> &s) {
   if (s.empty()) {
-    os << "[(empty)]";
+    os << "['empty']";
     return os;
   }
-  os << "[(top) ";
+  os << "['top' ";
   auto cs = s;
   while (cs.size() != 1) {
     os << cs.top() << ns_log::_splitor_;
@@ -485,10 +485,10 @@ std::ostream &operator<<(std::ostream &os, const std::stack<Val> &s) {
 template <typename Val>
 std::ostream &operator<<(std::ostream &os, const std::queue<Val> &q) {
   if (q.empty()) {
-    os << "[(empty)]";
+    os << "['empty']";
     return os;
   }
-  os << "[(front) ";
+  os << "['front' ";
   auto cq = q;
   while (cq.size() != 1) {
     os << cq.front() << ns_log::_splitor_;
