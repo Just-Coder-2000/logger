@@ -20,7 +20,7 @@ _|_|_|_|    _|_|      _|_|_|    _|_|_|    _|_|_|  _|
 
 <center>
 
-log message macroes
+log message methods
 
 |message type|describe|
 |---|---| 
@@ -29,18 +29,6 @@ log message macroes
 |warning|about possible accidents, etc.; a warning, warning, etc about the punishment to be suffered|
 |error|Error; Errors; Fallacy;|
 |fatal|Fatal; Catastrophic; Destructive; Cause failure|
-
-</center>
-
-<center>
-
-setting methods
-
-|main method|describe|
-|---|---|
-|void setCurOS(std::ostream &)|Set the output stream|
-|static void setSplitor(const std::string &sp)|Set the splitor for container output format|
-|static void setFirSedName(const std::string &firstName, const std::string &secondName)|Set the firName and sedName for std::pair|
 
 </center>
 
@@ -59,30 +47,38 @@ format macroes for STL containers
 
 ## 2. Usage
 ```cpp
-
 void cos() {
-  Info("this is a 'info' message");
-  Process("we all know that 'pi' equals to ", M_PI);
-  Warning("It's time to eat!");
-  Error("the file hasn't been closed! (", false, ")");
-  Fatal("the vector elems are: ", std::vector<int>{1, 5, 6, 2, 4, 78});
+  std::unordered_map<std::string, std::string> m;
+  m.insert({"cpp", "std11"});
+  m.insert({"python", "3.8"});
+  info("this is a 'info' message");
+  process("we all know that 'pi' equals to ", M_PI);
+  warning("It's time to eat!");
+  error("the file hasn't been closed! (", false, ")");
+  fatal("the vector elems are: ", std::vector<int>{1, 5, 6, 2, 4, 78});
+  info("the standard of the langs are: ", m);
 }
 
 void fos() {
-  ns_log::FLogger flogger("../log.log");
+  std::unordered_map<std::string, std::string> m;
+  m.insert({"cpp", "std11"});
+  m.insert({"python", "3.8"});
+  FLogger flogger("../log.log");
   flogger.info("this is a 'info' message");
   flogger.process("we all know that 'pi' equals to ", M_PI);
   flogger.warning("It's time to eat!");
   flogger.error("the file hasn't been closed! (", false, ")");
   flogger.fatal("the vector elems are: ", std::vector<int>{1, 5, 6, 2, 4, 78});
+  flogger.info("the standard of the lang is: ", m);
 }
 ```
 
 the log file is [here](./log.log)
 ```log
-[  info   ]-[ 1645108700.679 ] this is a 'info' message
-[ process ]-[ 1645108700.679 ] we all know that 'pi' equals to 3.14159
-[ warning ]-[ 1645108700.679 ] It's time to eat!
-[  error  ]-[ 1645108700.679 ] the file hasn't been closed! (0)
-[  error  ]-[ 1645108700.679 ] the vector elems are: [1, 5, 6, 2, 4, 78]
+[  info   ]-[ 1645249195.619 ] this is a 'info' message
+[ process ]-[ 1645249195.619 ] we all know that 'pi' equals to 3.14159
+[ warning ]-[ 1645249195.619 ] It's time to eat!
+[  error  ]-[ 1645249195.619 ] the file hasn't been closed! (0)
+[  fatal  ]-[ 1645249195.619 ] the vector elems are: [1, 5, 6, 2, 4, 78]
+[  info   ]-[ 1645249195.619 ] the standard of the lang is: [{'python': 3.8}, {'cpp': std11}]
 ```
