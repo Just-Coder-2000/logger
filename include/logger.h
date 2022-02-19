@@ -20,27 +20,22 @@
 
 /**
  * @brief the main message type macroes:
- * everything that overrides the operator '<<' can use the macroes.
+ * everything that overrides the operator '<<' can use the static functions.
  *
- * @param INFO
+ * @param info
  * {Information; Message; real-time info Of information; Of messages;
  * Informative}
- * @param PROCESS
+ * @param process
  * {The process of achieving a goal; The development of things, especially the
  * steps of natural change;}
- * @param WARNING
+ * @param warning
  * {about possible accidents, etc.; a warning, warning, etc about the punishment
  * to be suffered}
- * @param ERROR
+ * @param error
  * {Error; Errors; Fallacy;}
- * @param FATAL
+ * @param fatal
  * {Fatal; Catastrophic; Destructive; Cause failure}
  *
- * @brief the main methods.
- * [1] static void setCurOS(std::ostream &os)
- * [2] static void setSplitor(const std::string &sp)
- * [3] static void setFirSedName(const std::string &firstName, const std::string
- * &secondName)
  *
  * @brief output format for containers in the STL.
  * [1] std::pair
@@ -214,48 +209,51 @@ namespace ns_log {
     }
   };
 
-  namespace ns_priv {
-    static Logger _cos_(&std::cout);
+  static Logger _cos_(&std::cout);
 
-    /**
-     * @brief params to control
-     * @param _splitor_ the splitor to split the elements
-     * @param _firName_ the describe name for the first element of the std::pair
-     * @param _sedName_ the describe name for the second element of the std::pair
-     */
-    static std::string _splitor_(", ");
-    static std::string _firName_("fir");
-    static std::string _sedName_("sed");
+  /**
+   * @brief params to control
+   * @param _splitor_ the splitor to split the elements
+   * @param _firName_ the describe name for the first element of the std::pair
+   * @param _sedName_ the describe name for the second element of the std::pair
+   */
+  static const std::string _splitor_(", ");
 
-    /**
-     * @brief Set the splitor for container output format
-     */
-    static void setSplitor(const std::string &sp) { ns_log::ns_priv::_splitor_ = sp; }
+  /**
+   * @brief the main message type macroes
+   *
+   * [1] info    {Information; Message; real-time info Of information; Of messages; Informative}
+   * [2] process {The process of achieving a goal; The development of things, especially the steps of natural change;}
+   * [3] warning {about possible accidents, etc.; a warning, warning, etc about the punishment to be suffered}
+   * [4] error   {Error; Errors; Fallacy;}
+   * [5] fatal   {Fatal; Catastrophic; Destructive; Cause failure}
+   *
+   */
 
-    /**
-     * @brief Set the firName and sedName for std::pair
-     */
-    static void setFirSedName(const std::string &firstName,
-                              const std::string &secondName) {
-      ns_log::ns_priv::_firName_ = firstName, ns_log::ns_priv::_sedName_ = secondName;
-    }
-  } // namespace ns_priv
+  template <typename... ArgvsType>
+  static Logger &info(const ArgvsType &...argvs) {
+    return ns_log::_cos_(" info  ", argvs...);
+  }
 
-/**
- * @brief the main message type macroes
- *
- * [1] info    {Information; Message; real-time info Of information; Of messages; Informative}
- * [2] process {The process of achieving a goal; The development of things, especially the steps of natural change;}
- * [3] warning {about possible accidents, etc.; a warning, warning, etc about the punishment to be suffered}
- * [4] error   {Error; Errors; Fallacy;}
- * [5] fatal   {Fatal; Catastrophic; Destructive; Cause failure}
- *
- */
-#define Info(...) ns_log::ns_priv::_cos_(" info  ", __VA_ARGS__)
-#define Process(...) ns_log::ns_priv::_cos_("process", __VA_ARGS__)
-#define Warning(...) ns_log::ns_priv::_cos_("warning", __VA_ARGS__)
-#define Error(...) ns_log::ns_priv::_cos_(" error ", __VA_ARGS__)
-#define Fatal(...) ns_log::ns_priv::_cos_(" fatal ", __VA_ARGS__)
+  template <typename... ArgvsType>
+  static Logger &process(const ArgvsType &...argvs) {
+    return ns_log::_cos_("process", argvs...);
+  }
+
+  template <typename... ArgvsType>
+  static Logger &warning(const ArgvsType &...argvs) {
+    return ns_log::_cos_("warning", argvs...);
+  }
+
+  template <typename... ArgvsType>
+  static Logger &error(const ArgvsType &...argvs) {
+    return ns_log::_cos_(" error ", argvs...);
+  }
+
+  template <typename... ArgvsType>
+  static Logger &fatal(const ArgvsType &...argvs) {
+    return ns_log::_cos_(" fatal ", argvs...);
+  }
 
 } // namespace ns_log
 
@@ -266,8 +264,7 @@ namespace ns_log {
  */
 template <typename Key, typename Val>
 std::ostream &operator<<(std::ostream &os, const std::pair<Key, Val> &p) {
-  os << "{'" + ns_log::ns_priv::_firName_ + "': " << p.first
-     << ", '" + ns_log::ns_priv::_sedName_ + "': " << p.second << '}';
+  os << "{'" << p.first << "': " << p.second << '}';
   return os;
 }
 
@@ -283,7 +280,7 @@ std::ostream &orderedConer(std::ostream &os, const ConType &s) {
   }
   auto iter = s.cbegin();
   for (; iter != (--s.cend()); ++iter)
-    os << *iter << ns_log::ns_priv::_splitor_;
+    os << *iter << ns_log::_splitor_;
   os << *iter << ']';
   return os;
 }
@@ -300,10 +297,10 @@ std::ostream &unorderedConer(std::ostream &os, const ConType &c) {
   }
   std::stringstream stream;
   for (const auto &elem : c)
-    stream << elem << ns_log::ns_priv::_splitor_;
+    stream << elem << ns_log::_splitor_;
   std::string str = stream.str();
   os << std::string_view(str.c_str(),
-                         str.size() - ns_log::ns_priv::_splitor_.size())
+                         str.size() - ns_log::_splitor_.size())
      << ']';
   return os;
 }
@@ -452,7 +449,7 @@ template <typename Val, std::size_t Size>
 std::ostream &operator<<(std::ostream &os, const std::array<Val, Size> &s) {
   os << '[';
   for (int i = 0; i != s.size() - 1; ++i)
-    os << s[i] << ns_log::ns_priv::_splitor_;
+    os << s[i] << ns_log::_splitor_;
   os << s.back() << ']';
   return os;
 }
@@ -472,7 +469,7 @@ std::ostream &operator<<(std::ostream &os, const std::stack<Val> &s) {
   os << "[(top) ";
   auto cs = s;
   while (cs.size() != 1) {
-    os << cs.top() << ns_log::ns_priv::_splitor_;
+    os << cs.top() << ns_log::_splitor_;
     cs.pop();
   }
   os << cs.top() << "]";
@@ -494,7 +491,7 @@ std::ostream &operator<<(std::ostream &os, const std::queue<Val> &q) {
   os << "[(front) ";
   auto cq = q;
   while (cq.size() != 1) {
-    os << cq.front() << ns_log::ns_priv::_splitor_;
+    os << cq.front() << ns_log::_splitor_;
     cq.pop();
   }
   os << cq.front() << "]";
