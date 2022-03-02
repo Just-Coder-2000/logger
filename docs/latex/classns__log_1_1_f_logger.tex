@@ -1,0 +1,79 @@
+\hypertarget{classns__log_1_1_f_logger}{}\doxysection{ns\+\_\+log\+::F\+Logger Class Reference}
+\label{classns__log_1_1_f_logger}\index{ns\_log::FLogger@{ns\_log::FLogger}}
+
+
+logger for file  
+
+
+
+
+{\ttfamily \#include $<$logger.\+h$>$}
+
+
+
+Inheritance diagram for ns\+\_\+log\+::F\+Logger\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=173pt]{classns__log_1_1_f_logger__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for ns\+\_\+log\+::F\+Logger\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=173pt]{classns__log_1_1_f_logger__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classns__log_1_1_f_logger_a83132bb78ca3a2414583c8eededae711}\label{classns__log_1_1_f_logger_a83132bb78ca3a2414583c8eededae711}} 
+{\bfseries F\+Logger} (const std\+::string \&filename)
+\item 
+\mbox{\Hypertarget{classns__log_1_1_f_logger_a7fc97212d22043e35d101a49c5167757}\label{classns__log_1_1_f_logger_a7fc97212d22043e35d101a49c5167757}} 
+\mbox{\hyperlink{classns__log_1_1_f_logger_a7fc97212d22043e35d101a49c5167757}{$\sim$\+F\+Logger}} ()
+\begin{DoxyCompactList}\small\item\em a smart shared file logger \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classns__log_1_1_f_logger_a7a2b4b25b75dd0010a8435d842a0a1ad}\label{classns__log_1_1_f_logger_a7a2b4b25b75dd0010a8435d842a0a1ad}} 
+{\bfseries F\+Logger} (const \mbox{\hyperlink{classns__log_1_1_f_logger}{F\+Logger}} \&flogger)
+\item 
+\mbox{\Hypertarget{classns__log_1_1_f_logger_abedc4896498048275fb93fbf44c464e9}\label{classns__log_1_1_f_logger_abedc4896498048275fb93fbf44c464e9}} 
+{\bfseries F\+Logger} (\mbox{\hyperlink{classns__log_1_1_f_logger}{F\+Logger}} \&\&flogger)
+\item 
+\mbox{\Hypertarget{classns__log_1_1_f_logger_ad0032397e1161e8f163dfdc75ce75200}\label{classns__log_1_1_f_logger_ad0032397e1161e8f163dfdc75ce75200}} 
+\mbox{\hyperlink{classns__log_1_1_f_logger}{F\+Logger}} \& {\bfseries operator=} (const \mbox{\hyperlink{classns__log_1_1_f_logger}{F\+Logger}} \&flogger)
+\item 
+\mbox{\Hypertarget{classns__log_1_1_f_logger_a9d4bc64b88832ebc4a154a13a9700c44}\label{classns__log_1_1_f_logger_a9d4bc64b88832ebc4a154a13a9700c44}} 
+\mbox{\hyperlink{classns__log_1_1_f_logger}{F\+Logger}} \& {\bfseries operator=} (\mbox{\hyperlink{classns__log_1_1_f_logger}{F\+Logger}} \&\&flogger)
+\item 
+\mbox{\Hypertarget{classns__log_1_1_f_logger_af14530746433587f4a49403f6ad29e46}\label{classns__log_1_1_f_logger_af14530746433587f4a49403f6ad29e46}} 
+{\footnotesize template$<$typename... Argvs\+Type$>$ }\\\mbox{\hyperlink{classns__log_1_1_logger}{Logger}} \& {\bfseries operator()} (const std\+::string \&desc, const Argvs\+Type \&...argvs)
+\item 
+\mbox{\Hypertarget{classns__log_1_1_f_logger_a8a0fe0f86f3d547484b18204f97603d3}\label{classns__log_1_1_f_logger_a8a0fe0f86f3d547484b18204f97603d3}} 
+{\footnotesize template$<$typename... Argvs\+Type$>$ }\\\mbox{\hyperlink{classns__log_1_1_f_logger}{F\+Logger}} \& {\bfseries info} (const Argvs\+Type \&...argvs)
+\item 
+\mbox{\Hypertarget{classns__log_1_1_f_logger_a26847ba039446dd92b5e58cdaf0c3c26}\label{classns__log_1_1_f_logger_a26847ba039446dd92b5e58cdaf0c3c26}} 
+{\footnotesize template$<$typename... Argvs\+Type$>$ }\\\mbox{\hyperlink{classns__log_1_1_f_logger}{F\+Logger}} \& {\bfseries warning} (const Argvs\+Type \&...argvs)
+\item 
+\mbox{\Hypertarget{classns__log_1_1_f_logger_ab23e201dd6cdd31666e1f12cf1493ef5}\label{classns__log_1_1_f_logger_ab23e201dd6cdd31666e1f12cf1493ef5}} 
+{\footnotesize template$<$typename... Argvs\+Type$>$ }\\\mbox{\hyperlink{classns__log_1_1_f_logger}{F\+Logger}} \& {\bfseries process} (const Argvs\+Type \&...argvs)
+\item 
+\mbox{\Hypertarget{classns__log_1_1_f_logger_a602c1099e08a20eff241b667b4b39dcf}\label{classns__log_1_1_f_logger_a602c1099e08a20eff241b667b4b39dcf}} 
+{\footnotesize template$<$typename... Argvs\+Type$>$ }\\\mbox{\hyperlink{classns__log_1_1_f_logger}{F\+Logger}} \& {\bfseries fatal} (const Argvs\+Type \&...argvs)
+\item 
+\mbox{\Hypertarget{classns__log_1_1_f_logger_abffe0a96c317b9b3bf5521f3c7ef51f8}\label{classns__log_1_1_f_logger_abffe0a96c317b9b3bf5521f3c7ef51f8}} 
+{\footnotesize template$<$typename... Argvs\+Type$>$ }\\\mbox{\hyperlink{classns__log_1_1_f_logger}{F\+Logger}} \& {\bfseries error} (const Argvs\+Type \&...argvs)
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+logger for file 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/csl/\+Study\+C\+P\+P/artwork/logger/include/\mbox{\hyperlink{logger_8h}{logger.\+h}}\end{DoxyCompactItemize}

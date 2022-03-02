@@ -1,0 +1,74 @@
+\hypertarget{classns__log_1_1_logger}{}\doxysection{ns\+\_\+log\+::Logger Class Reference}
+\label{classns__log_1_1_logger}\index{ns\_log::Logger@{ns\_log::Logger}}
+
+
+base logger  
+
+
+
+
+{\ttfamily \#include $<$logger.\+h$>$}
+
+
+
+Inheritance diagram for ns\+\_\+log\+::Logger\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=173pt]{classns__log_1_1_logger__inherit__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classns__log_1_1_logger_a5ad7f8362e9b7442a1922dc402ea87d5}\label{classns__log_1_1_logger_a5ad7f8362e9b7442a1922dc402ea87d5}} 
+\mbox{\hyperlink{classns__log_1_1_logger_a5ad7f8362e9b7442a1922dc402ea87d5}{Logger}} (std\+::ostream $\ast$os)
+\begin{DoxyCompactList}\small\item\em construct a new \mbox{\hyperlink{classns__log_1_1_logger}{Logger}} object \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classns__log_1_1_logger_ab02f506f8f2a6d78f16cdb62d6cbe705}\label{classns__log_1_1_logger_ab02f506f8f2a6d78f16cdb62d6cbe705}} 
+{\footnotesize template$<$typename... Argvs\+Type$>$ }\\\mbox{\hyperlink{classns__log_1_1_logger}{Logger}} \& {\bfseries operator()} (const std\+::string \&desc, const Argvs\+Type \&...argvs)
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classns__log_1_1_logger_a25606d608390fee5eb350d116114b8ae}\label{classns__log_1_1_logger_a25606d608390fee5eb350d116114b8ae}} 
+static void {\bfseries \+\_\+\+\_\+print\+\_\+\+\_\+} (std\+::ostream \&os)
+\item 
+\mbox{\Hypertarget{classns__log_1_1_logger_a4898cf5426adc6b366dc5fdbf32b689f}\label{classns__log_1_1_logger_a4898cf5426adc6b366dc5fdbf32b689f}} 
+{\footnotesize template$<$typename Argv\+Type $>$ }\\static void {\bfseries \+\_\+\+\_\+print\+\_\+\+\_\+} (std\+::ostream \&os, const Argv\+Type \&argv)
+\item 
+\mbox{\Hypertarget{classns__log_1_1_logger_a61d27aba4201711c60897c7e990e263b}\label{classns__log_1_1_logger_a61d27aba4201711c60897c7e990e263b}} 
+{\footnotesize template$<$typename Argv\+Type , typename... Argvs\+Type$>$ }\\static void {\bfseries \+\_\+\+\_\+print\+\_\+\+\_\+} (std\+::ostream \&os, const Argv\+Type \&argv, const Argvs\+Type \&...argvs)
+\item 
+static double \mbox{\hyperlink{classns__log_1_1_logger_a8d99daa303ec4d4a3800310ad57b2113}{cur\+Time}} ()
+\begin{DoxyCompactList}\small\item\em get the time when the message is outputed \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classns__log_1_1_logger_ad17490385dc10c85daaf3613ba0b4b93}\label{classns__log_1_1_logger_ad17490385dc10c85daaf3613ba0b4b93}} 
+std\+::ostream $\ast$ \mbox{\hyperlink{classns__log_1_1_logger_ad17490385dc10c85daaf3613ba0b4b93}{\+\_\+loger\+OS}}
+\begin{DoxyCompactList}\small\item\em the members \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+base logger 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classns__log_1_1_logger_a8d99daa303ec4d4a3800310ad57b2113}\label{classns__log_1_1_logger_a8d99daa303ec4d4a3800310ad57b2113}} 
+\index{ns\_log::Logger@{ns\_log::Logger}!curTime@{curTime}}
+\index{curTime@{curTime}!ns\_log::Logger@{ns\_log::Logger}}
+\doxysubsubsection{\texorpdfstring{curTime()}{curTime()}}
+{\footnotesize\ttfamily static double ns\+\_\+log\+::\+Logger\+::cur\+Time (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [protected]}}
+
+
+
+get the time when the message is outputed 
+
+\begin{DoxyReturn}{Returns}
+int64\+\_\+t 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/csl/\+Study\+C\+P\+P/artwork/logger/include/\mbox{\hyperlink{logger_8h}{logger.\+h}}\end{DoxyCompactItemize}
