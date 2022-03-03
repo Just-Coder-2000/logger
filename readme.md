@@ -47,7 +47,7 @@ format macroes for STL containers
 
 ## 2. Usage
 ```cpp
-void cos() {
+void stdcout() {
   std::unordered_map<std::string, std::string> m;
   m.insert({"cpp", "std11"});
   m.insert({"python", "3.8"});
@@ -63,7 +63,7 @@ void fos() {
   std::unordered_map<std::string, std::string> m;
   m.insert({"cpp", "std11"});
   m.insert({"python", "3.8"});
-  FLogger flogger("../log.log");
+  FileLogger flogger("../log.log");
   flogger.info("this is a 'info' message");
   flogger.process("we all know that 'pi' equals to ", M_PI);
   flogger.warning("It's time to eat!");
@@ -82,3 +82,7 @@ the log file is [here](./log.log)
 [  fatal  ]-[ 1645249195.619 ] the vector elems are: [1, 5, 6, 2, 4, 78]
 [  info   ]-[ 1645249195.619 ] the standard of the lang is: [{'python': 3.8}, {'cpp': std11}]
 ```
+
+## 3. Structure
+
+<img src="./docs/imgs/logger.png" width="80%">

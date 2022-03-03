@@ -6,7 +6,7 @@
 
 using namespace ns_log;
 
-void cos() {
+void stdcout() {
   std::unordered_map<std::string, std::string> m;
   m.insert({"cpp", "std11"});
   m.insert({"python", "3.8"});
@@ -22,7 +22,7 @@ void fos() {
   std::unordered_map<std::string, std::string> m;
   m.insert({"cpp", "std11"});
   m.insert({"python", "3.8"});
-  FLogger flogger("../log.log");
+  FileLogger flogger("../log.log");
   flogger.info("this is a 'info' message");
   flogger.process("we all know that 'pi' equals to ", M_PI);
   flogger.warning("It's time to eat!");
@@ -35,7 +35,7 @@ int main(int argc, char const *argv[]) {
   /**
    * @brief std::cout
    */
-  ::cos();
+  ::stdcout();
 
   /**
    * @brief std::ofstream

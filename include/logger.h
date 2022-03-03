@@ -51,173 +51,144 @@
  */
 
 namespace ns_log {
-  /**
-   * @brief base logger
-   */
-  class Logger {
-  protected:
+  namespace ns_priv {
     /**
-     * @brief the members
+     * @brief base logger
      */
-    std::ostream *_logerOS;
+    class Logger {
+    protected:
+      /**
+       * @brief the members
+       */
+      std::ostream *_logerOS;
 
-  public:
-    /**
-     * @brief construct a new Logger object
-     */
-    Logger(std::ostream *os) : _logerOS(os) {}
+    public:
+      /**
+       * @brief construct a new Logger object
+       */
+      Logger(std::ostream *os) : _logerOS(os) {}
 
-    virtual ~Logger() {}
+      virtual ~Logger() {}
 
-    template <typename... ArgvsType>
-    Logger &operator()(const std::string &desc, const ArgvsType &...argvs) {
-      std::stringstream stream;
-      stream << std::fixed << std::setprecision(3);
-      stream << "[ \e[1m" << desc << "\e[0m ]-[ \e[1m" << Logger::curTime() << "\e[0m ] ";
-      (*this->_logerOS) << stream.str();
-      Logger::__print__(*this->_logerOS, argvs...);
-      return *this;
-    }
-
-  protected:
-    static void __print__(std::ostream &os) {
-      os << '\n';
-      return;
-    }
-
-    template <typename ArgvType>
-    static void __print__(std::ostream &os, const ArgvType &argv) {
-      os << argv << '\n';
-      return;
-    }
-
-    template <typename ArgvType, typename... ArgvsType>
-    static void __print__(std::ostream &os, const ArgvType &argv, const ArgvsType &...argvs) {
-      os << argv;
-      Logger::__print__(os, argvs...);
-      return;
-    }
-
-    /**
-     * @brief get the time when the message is outputed
-     *
-     * @return int64_t
-     */
-    static double curTime() {
-      auto now = std::chrono::system_clock::now();
-      return std::chrono::time_point_cast<std::chrono::duration<double>>(now)
-          .time_since_epoch()
-          .count();
-    }
-  };
-
-  /**
-   * @brief logger for file
-   */
-  class FLogger : public Logger {
-  private:
-    std::size_t *_count;
-
-  public:
-    FLogger(const std::string &filename)
-        : Logger(new std::ofstream(filename, std::ios::out)), _count(new std::size_t(1)) {
-    }
-
-    /**
-     * @brief a smart shared file logger
-     */
-    ~FLogger() {
-      if (this->_logerOS != nullptr && this->_count != nullptr) {
-        --(*this->_count);
-        if (*this->_count == 0) {
-          std::ofstream *ofs = dynamic_cast<std::ofstream *>(this->_logerOS);
-          ofs->close();
-          delete this->_logerOS;
-          delete this->_count;
-          this->_logerOS = nullptr;
-          this->_count = nullptr;
-        }
+      template <typename... ArgvsType>
+      Logger &operator()(const std::string &desc, const ArgvsType &...argvs) {
+        std::stringstream stream;
+        stream << std::fixed << std::setprecision(3);
+        this->getMessageHeader(stream, desc);
+        (*this->_logerOS) << stream.str();
+        return Logger::__print__(*this->_logerOS, argvs...);
       }
-    }
 
-    FLogger(const FLogger &flogger) : Logger(flogger._logerOS) {
-      this->_count = flogger._count;
-      ++(*this->_count);
-    }
+      template <typename... ArgvsType>
+      Logger &info(const ArgvsType &...argvs) {
+        (*this)(" info  ", argvs...);
+        return *this;
+      }
 
-    FLogger(FLogger &&flogger) : Logger(flogger._logerOS) {
-      this->_count = flogger._count;
+      template <typename... ArgvsType>
+      Logger &warning(const ArgvsType &...argvs) {
+        (*this)("warning", argvs...);
+        return *this;
+      }
 
-      flogger._logerOS = nullptr;
-      flogger._count = nullptr;
-    }
+      template <typename... ArgvsType>
+      Logger &process(const ArgvsType &...argvs) {
+        (*this)("process", argvs...);
+        return *this;
+      }
 
-    FLogger &operator=(const FLogger &flogger) {
-      this->_logerOS = flogger._logerOS;
-      this->_count = flogger._count;
-      ++(*this->_count);
-      return *this;
-    }
+      template <typename... ArgvsType>
+      Logger &fatal(const ArgvsType &...argvs) {
+        (*this)(" fatal ", argvs...);
+        return *this;
+      }
 
-    FLogger &operator=(FLogger &&flogger) {
-      this->_logerOS = flogger._logerOS;
-      this->_count = flogger._count;
+      template <typename... ArgvsType>
+      Logger &error(const ArgvsType &...argvs) {
+        (*this)(" error ", argvs...);
+        return *this;
+      }
 
-      flogger._logerOS = nullptr;
-      flogger._count = nullptr;
-      return *this;
-    }
+      virtual void getMessageHeader(std::ostream &os, const std::string &desc) = 0;
 
-    template <typename... ArgvsType>
-    Logger &operator()(const std::string &desc, const ArgvsType &...argvs) {
-      std::stringstream stream;
-      stream << std::fixed << std::setprecision(3);
-      stream << "[ " << desc << " ]-[ " << Logger::curTime() << " ] ";
-      (*this->_logerOS) << stream.str();
-      Logger::__print__(*this->_logerOS, argvs...);
-      return *this;
-    }
+    protected:
+      Logger &__print__(std::ostream &os) {
+        os << '\n';
+        return *this;
+      }
 
-    template <typename... ArgvsType>
-    FLogger &info(const ArgvsType &...argvs) {
-      (*this)(" info  ", argvs...);
-      return *this;
-    }
+      template <typename ArgvType>
+      Logger &__print__(std::ostream &os, const ArgvType &argv) {
+        os << argv << '\n';
+        return *this;
+      }
 
-    template <typename... ArgvsType>
-    FLogger &warning(const ArgvsType &...argvs) {
-      (*this)("warning", argvs...);
-      return *this;
-    }
+      template <typename ArgvType, typename... ArgvsType>
+      Logger &__print__(std::ostream &os, const ArgvType &argv, const ArgvsType &...argvs) {
+        os << argv;
+        Logger::__print__(os, argvs...);
+        return *this;
+      }
 
-    template <typename... ArgvsType>
-    FLogger &process(const ArgvsType &...argvs) {
-      (*this)("process", argvs...);
-      return *this;
-    }
+      /**
+       * @brief get the time when the message is outputed
+       *
+       * @return int64_t
+       */
+      double curTime() {
+        auto now = std::chrono::system_clock::now();
+        return std::chrono::time_point_cast<std::chrono::duration<double>>(now)
+            .time_since_epoch()
+            .count();
+      }
 
-    template <typename... ArgvsType>
-    FLogger &fatal(const ArgvsType &...argvs) {
-      (*this)(" fatal ", argvs...);
-      return *this;
-    }
+    protected:
+      Logger() = delete;
+      Logger(const Logger &) = delete;
+      Logger(Logger &&) = delete;
+      Logger &operator=(const Logger &) = delete;
+      Logger &operator=(Logger &&) = delete;
+    };
 
-    template <typename... ArgvsType>
-    FLogger &error(const ArgvsType &...argvs) {
-      (*this)(" error ", argvs...);
-      return *this;
+  } // namespace ns_priv
+
+  class StdLogger : public ns_priv::Logger {
+  public:
+    StdLogger(std::ostream &os) : Logger(&os) {}
+
+    virtual ~StdLogger() {}
+
+    virtual void getMessageHeader(std::ostream &os, const std::string &desc) override {
+      os << "[ \e[1m" << desc << "\e[0m ]-[ \e[1m" << Logger::curTime() << "\e[0m ] ";
+      return;
     }
   };
 
-  static Logger _cos_(&std::cout);
+  class FileLogger : public ns_priv::Logger {
+  public:
+    FileLogger(const std::string &filename) : Logger(new std::ofstream(filename, std::ios::out)) {}
 
-  /**
-   * @brief params to control
-   * @param _splitor_ the splitor to split the elements
-   * @param _firName_ the describe name for the first element of the std::pair
-   * @param _sedName_ the describe name for the second element of the std::pair
-   */
-  static const std::string _splitor_(", ");
+    virtual ~FileLogger() {
+      delete this->_logerOS;
+    }
+
+    virtual void getMessageHeader(std::ostream &os, const std::string &desc) override {
+      os << "[ " << desc << " ]-[ " << Logger::curTime() << " ] ";
+      return;
+    }
+  };
+
+  namespace ns_priv {
+    /**
+     * @brief params to control
+     * @param _splitor_ the splitor to split the elements
+     * @param _firName_ the describe name for the first element of the std::pair
+     * @param _sedName_ the describe name for the second element of the std::pair
+     */
+    static const std::string _splitor_(", ");
+
+    static StdLogger stdCoutLogger(std::cout);
+  } // namespace ns_priv
 
   /**
    * @brief the main message type macroes
@@ -229,30 +200,29 @@ namespace ns_log {
    * [5] fatal   {Fatal; Catastrophic; Destructive; Cause failure}
    *
    */
-
   template <typename... ArgvsType>
-  static Logger &info(const ArgvsType &...argvs) {
-    return ns_log::_cos_(" info  ", argvs...);
+  static ns_priv::Logger &info(const ArgvsType &...argvs) {
+    return ns_log::ns_priv::stdCoutLogger.info(argvs...);
   }
 
   template <typename... ArgvsType>
-  static Logger &process(const ArgvsType &...argvs) {
-    return ns_log::_cos_("process", argvs...);
+  static ns_priv::Logger &process(const ArgvsType &...argvs) {
+    return ns_log::ns_priv::stdCoutLogger.process(argvs...);
   }
 
   template <typename... ArgvsType>
-  static Logger &warning(const ArgvsType &...argvs) {
-    return ns_log::_cos_("warning", argvs...);
+  static ns_priv::Logger &warning(const ArgvsType &...argvs) {
+    return ns_log::ns_priv::stdCoutLogger.warning(argvs...);
   }
 
   template <typename... ArgvsType>
-  static Logger &error(const ArgvsType &...argvs) {
-    return ns_log::_cos_(" error ", argvs...);
+  static ns_priv::Logger &error(const ArgvsType &...argvs) {
+    return ns_log::ns_priv::stdCoutLogger.error(argvs...);
   }
 
   template <typename... ArgvsType>
-  static Logger &fatal(const ArgvsType &...argvs) {
-    return ns_log::_cos_(" fatal ", argvs...);
+  static ns_priv::Logger &fatal(const ArgvsType &...argvs) {
+    return ns_log::ns_priv::stdCoutLogger.fatal(argvs...);
   }
 
 } // namespace ns_log
@@ -275,12 +245,12 @@ template <typename ConType>
 std::ostream &orderedConer(std::ostream &os, const ConType &s) {
   os << '[';
   if (s.empty()) {
-    os << "'empty']";
+    os << "]";
     return os;
   }
   auto iter = s.cbegin();
   for (; iter != (--s.cend()); ++iter)
-    os << *iter << ns_log::_splitor_;
+    os << *iter << ns_log::ns_priv::_splitor_;
   os << *iter << ']';
   return os;
 }
@@ -292,15 +262,15 @@ template <typename ConType>
 std::ostream &unorderedConer(std::ostream &os, const ConType &c) {
   os << '[';
   if (c.empty()) {
-    os << "'empty']";
+    os << "]";
     return os;
   }
   std::stringstream stream;
   for (const auto &elem : c)
-    stream << elem << ns_log::_splitor_;
+    stream << elem << ns_log::ns_priv::_splitor_;
   std::string str = stream.str();
   os << std::string_view(str.c_str(),
-                         str.size() - ns_log::_splitor_.size())
+                         str.size() - ns_log::ns_priv::_splitor_.size())
      << ']';
   return os;
 }
@@ -449,7 +419,7 @@ template <typename Val, std::size_t Size>
 std::ostream &operator<<(std::ostream &os, const std::array<Val, Size> &s) {
   os << '[';
   for (int i = 0; i != s.size() - 1; ++i)
-    os << s[i] << ns_log::_splitor_;
+    os << s[i] << ns_log::ns_priv::_splitor_;
   os << s.back() << ']';
   return os;
 }
@@ -463,13 +433,13 @@ std::ostream &operator<<(std::ostream &os, const std::array<Val, Size> &s) {
 template <typename Val>
 std::ostream &operator<<(std::ostream &os, const std::stack<Val> &s) {
   if (s.empty()) {
-    os << "['empty']";
+    os << "[]";
     return os;
   }
   os << "['top' ";
   auto cs = s;
   while (cs.size() != 1) {
-    os << cs.top() << ns_log::_splitor_;
+    os << cs.top() << ns_log::ns_priv::_splitor_;
     cs.pop();
   }
   os << cs.top() << "]";
@@ -485,13 +455,13 @@ std::ostream &operator<<(std::ostream &os, const std::stack<Val> &s) {
 template <typename Val>
 std::ostream &operator<<(std::ostream &os, const std::queue<Val> &q) {
   if (q.empty()) {
-    os << "['empty']";
+    os << "[]";
     return os;
   }
   os << "['front' ";
   auto cq = q;
   while (cq.size() != 1) {
-    os << cq.front() << ns_log::_splitor_;
+    os << cq.front() << ns_log::ns_priv::_splitor_;
     cq.pop();
   }
   os << cq.front() << "]";
