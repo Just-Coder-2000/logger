@@ -46,34 +46,10 @@ format macroes for STL containers
 </center>
 
 ## 2. Usage
-```cpp
-void stdcout() {
-  std::unordered_map<std::string, std::string> m;
-  m.insert({"cpp", "std11"});
-  m.insert({"python", "3.8"});
-  info("this is a 'info' message");
-  process("we all know that 'pi' equals to ", M_PI);
-  warning("It's time to eat!");
-  error("the file hasn't been closed! (", false, ")");
-  fatal("the vector elems are: ", std::vector<int>{1, 5, 6, 2, 4, 78});
-  info("the standard of the langs are: ", m);
-}
-
-void fos() {
-  std::unordered_map<std::string, std::string> m;
-  m.insert({"cpp", "std11"});
-  m.insert({"python", "3.8"});
-  FileLogger flogger("../log.log");
-  flogger.info("this is a 'info' message");
-  flogger.process("we all know that 'pi' equals to ", M_PI);
-  flogger.warning("It's time to eat!");
-  flogger.error("the file hasn't been closed! (", false, ")");
-  flogger.fatal("the vector elems are: ", std::vector<int>{1, 5, 6, 2, 4, 78});
-  flogger.info("the standard of the lang is: ", m);
-}
-```
+<img src="./img/code.png">
 
 the log file is [here](./log.log)
+
 ```log
 [  info   ]-[ 1645249195.619 ] this is a 'info' message
 [ process ]-[ 1645249195.619 ] we all know that 'pi' equals to 3.14159
