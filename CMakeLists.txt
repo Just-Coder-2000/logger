@@ -6,12 +6,10 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_BUILD_TYPE "Release")
 
-include_directories(./include)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
-add_executable(${PROJECT_NAME} ./main.cpp)
-
-# install
+add_subdirectory(${CMAKE_SOURCE_DIR}/src)
 
 set(CMAKE_INSTALL_PREFIX /usr/local)
 
-install(FILES ${CMAKE_SOURCE_DIR}/include/logger.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include/artwork/logger)
+install(FILES ${CMAKE_SOURCE_DIR}/src/include/logger.h DESTINATION include/artwork/logger)
