@@ -171,7 +171,7 @@ namespace ns_log {
     virtual ~StdLogger() {}
 
     virtual void getMessageHeader(std::ostream &os, const std::string &desc, fmt::color color) override {
-      os << fmt::format(fmt::fg(color) | fmt::emphasis::bold, "[ {0} ]-[ {1} ] ", desc, Logger::curTime());
+      os << fmt::format(fmt::fg(color) | fmt::emphasis::bold, "[ {0} ]-[ {1:.6f} ] ", desc, Logger::curTime());
       return;
     }
   };
@@ -185,7 +185,7 @@ namespace ns_log {
     }
 
     virtual void getMessageHeader(std::ostream &os, const std::string &desc, fmt::color color) override {
-      os << fmt::format("[ {0} ]-[ {1} ] ", desc, Logger::curTime());
+      os << fmt::format("[ {0} ]-[ {1:.6f} ] ", desc, Logger::curTime());
       return;
     }
   };
