@@ -73,7 +73,7 @@ namespace ns_log {
       virtual ~Logger() {}
 
       template <typename... ArgvsType>
-      Logger &operator()(const std::string &desc, fmt::color color, const ArgvsType &...argvs) {
+      Logger &operator()(const std::string &desc, fmt::terminal_color color, const ArgvsType &...argvs) {
         std::stringstream stream1;
         stream1 << std::fixed << std::setprecision(3);
         this->getMessageHeader(stream1, desc, color);
@@ -92,35 +92,35 @@ namespace ns_log {
 
       template <typename... ArgvsType>
       Logger &info(const ArgvsType &...argvs) {
-        (*this)("info", fmt::color::green_yellow, argvs...);
+        (*this)("info", fmt::terminal_color::bright_green, argvs...);
         return *this;
       }
 
       template <typename... ArgvsType>
       Logger &warning(const ArgvsType &...argvs) {
-        (*this)("warning", fmt::color::yellow, argvs...);
+        (*this)("warning", fmt::terminal_color::bright_yellow, argvs...);
         return *this;
       }
 
       template <typename... ArgvsType>
       Logger &process(const ArgvsType &...argvs) {
-        (*this)("process", fmt::color::sky_blue, argvs...);
+        (*this)("process", fmt::terminal_color::bright_blue, argvs...);
         return *this;
       }
 
       template <typename... ArgvsType>
       Logger &fatal(const ArgvsType &...argvs) {
-        (*this)("fatal", fmt::color::purple, argvs...);
+        (*this)("fatal", fmt::terminal_color::bright_magenta, argvs...);
         return *this;
       }
 
       template <typename... ArgvsType>
       Logger &error(const ArgvsType &...argvs) {
-        (*this)("error", fmt::color::red, argvs...);
+        (*this)("error", fmt::terminal_color::bright_red, argvs...);
         return *this;
       }
 
-      virtual void getMessageHeader(std::ostream &os, const std::string &desc, fmt::color color) = 0;
+      virtual void getMessageHeader(std::ostream &os, const std::string &desc, fmt::terminal_color color) = 0;
 
     protected:
       Logger &__print__(std::ostream &os) {
@@ -170,8 +170,9 @@ namespace ns_log {
 
     virtual ~StdLogger() {}
 
-    virtual void getMessageHeader(std::ostream &os, const std::string &desc, fmt::color color) override {
-      os << fmt::format(fmt::fg(color) | fmt::emphasis::italic, "[ {0} ]-[ {1:.6f} ] ", desc, Logger::curTime());
+    virtual void getMessageHeader(std::ostream &os, const std::string &desc, fmt::terminal_color color) override {
+      os << '[' << fmt::format(fmt::fg(color) | fmt::emphasis::bold, " {} ", desc) << "]-";
+      os << '[' << fmt::format(fmt::fg(color) | fmt::emphasis::italic, " {:.6f}(s) ", Logger::curTime()) << "] ";
       return;
     }
   };
@@ -184,8 +185,8 @@ namespace ns_log {
       delete this->_logerOS;
     }
 
-    virtual void getMessageHeader(std::ostream &os, const std::string &desc, fmt::color color) override {
-      os << fmt::format("[ {0} ]-[ {1:.6f} ] ", desc, Logger::curTime());
+    virtual void getMessageHeader(std::ostream &os, const std::string &desc, fmt::terminal_color color) override {
+      os << fmt::format("[ {0} ]-[ {1:.6f}(s) ] ", desc, Logger::curTime());
       return;
     }
   };
