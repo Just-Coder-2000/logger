@@ -16,6 +16,7 @@ void stdcout() {
   error("the file hasn't been closed! (", false, ")");
   fatal("the vector elems are: ", std::vector<int>{1, 5, 6, 2, 4, 78});
   info("the standard of the langs are: ", m);
+  plaintext("Hello, world!");
 }
 
 void fos() {
@@ -29,6 +30,7 @@ void fos() {
   flogger.error("the file hasn't been closed! (", false, ")");
   flogger.fatal("the vector elems are: ", std::vector<int>{1, 5, 6, 2, 4, 78});
   flogger.info("the standard of the lang is: ", m);
+  flogger.plaintext("Hello, world");
 }
 
 int main(int argc, char const *argv[]) {

@@ -91,6 +91,18 @@ namespace ns_log {
       }
 
       template <typename... ArgvsType>
+      Logger &plaintext(const ArgvsType &...argvs) {
+        std::stringstream stream;
+        Logger::__print__(stream, argvs...);
+        if (this->_logerOS == &std::cout) {
+          *(this->_logerOS) << fmt::format(fmt::emphasis::italic, "{}", stream.str());
+        } else {
+          *(this->_logerOS) << fmt::format("{}", stream.str());
+        }
+        return *this;
+      }
+
+      template <typename... ArgvsType>
       Logger &info(const ArgvsType &...argvs) {
         (*this)("info", fmt::terminal_color::bright_green, argvs...);
         return *this;
@@ -206,6 +218,7 @@ namespace ns_log {
   /**
    * @brief the main message type macroes
    *
+   * [0] plaintext {the plain text}
    * [1] info    {Information; Message; real-time info Of information; Of messages; Informative}
    * [2] process {The process of achieving a goal; The development of things, especially the steps of natural change;}
    * [3] warning {about possible accidents, etc.; a warning, warning, etc about the punishment to be suffered}
@@ -213,6 +226,12 @@ namespace ns_log {
    * [5] fatal   {Fatal; Catastrophic; Destructive; Cause failure}
    *
    */
+
+  template <typename... ArgvsType>
+  static ns_priv::Logger &plaintext(const ArgvsType &...argvs) {
+    return ns_log::ns_priv::stdCoutLogger.plaintext(argvs...);
+  }
+
   template <typename... ArgvsType>
   static ns_priv::Logger &info(const ArgvsType &...argvs) {
     return ns_log::ns_priv::stdCoutLogger.info(argvs...);
