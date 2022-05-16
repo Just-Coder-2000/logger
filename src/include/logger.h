@@ -53,12 +53,13 @@
  */
 
 namespace ns_log {
+
   namespace ns_priv {
     /**
      * @brief base logger
      */
     class Logger {
-    protected:
+    public:
       /**
        * @brief the members
        */
@@ -231,31 +232,98 @@ namespace ns_log {
   static ns_priv::Logger &plaintext(const ArgvsType &...argvs) {
     return ns_log::ns_priv::stdCoutLogger.plaintext(argvs...);
   }
+#define LOG_PLAINTEXT(...) \
+  ns_log::ns_priv::stdCoutLogger.plaintext(__VA_ARGS__);
+#define LOG_PLAINTEXT_F(flogger, ...) \
+  flogger.plaintext(__VA_ARGS__);
 
   template <typename... ArgvsType>
   static ns_priv::Logger &info(const ArgvsType &...argvs) {
     return ns_log::ns_priv::stdCoutLogger.info(argvs...);
   }
+#define LOG_INFO(...) \
+  ns_log::ns_priv::stdCoutLogger.info(__VA_ARGS__);
+#define LOG_INFO_F(flogger, ...) \
+  flogger.info(__VA_ARGS__);
 
   template <typename... ArgvsType>
   static ns_priv::Logger &process(const ArgvsType &...argvs) {
     return ns_log::ns_priv::stdCoutLogger.process(argvs...);
   }
+#define LOG_PROCESS(...) \
+  ns_log::ns_priv::stdCoutLogger.process(__VA_ARGS__);
+#define LOG_PROCESS_F(flogger, ...) \
+  flogger.process(__VA_ARGS__);
 
   template <typename... ArgvsType>
   static ns_priv::Logger &warning(const ArgvsType &...argvs) {
     return ns_log::ns_priv::stdCoutLogger.warning(argvs...);
   }
+#define LOG_WARNING(...) \
+  ns_log::ns_priv::stdCoutLogger.warning(__VA_ARGS__);
+#define LOG_WARNING_F(flogger, ...) \
+  flogger.warning(__VA_ARGS__);
 
   template <typename... ArgvsType>
   static ns_priv::Logger &error(const ArgvsType &...argvs) {
     return ns_log::ns_priv::stdCoutLogger.error(argvs...);
   }
+#define LOG_ERROR(...) \
+  ns_log::ns_priv::stdCoutLogger.error(__VA_ARGS__);
+#define LOG_ERROR_F(flogger, ...) \
+  flogger.error(__VA_ARGS__);
 
   template <typename... ArgvsType>
   static ns_priv::Logger &fatal(const ArgvsType &...argvs) {
     return ns_log::ns_priv::stdCoutLogger.fatal(argvs...);
   }
+#define LOG_FATAL(...) \
+  ns_log::ns_priv::stdCoutLogger.fatal(__VA_ARGS__);
+#define LOG_FATAL_F(flogger, ...) \
+  flogger.fatal(__VA_ARGS__);
+
+// the prefix used when print variables
+#define LOG_PREFIX "-- "
+
+// the suffix used when print variables
+#define LOG_SUFFIX ""
+
+// a macro launcher
+#define MACRO_VAR_ARGS_IMPL_COUNT(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, N, ...) N
+#define COUNT_MACRO_VAR_ARGS(...) MACRO_VAR_ARGS_IMPL_COUNT(__VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+
+#define MACRO_COMBINE_2(MACRO, ARGS_COUNT) MACRO##ARGS_COUNT
+#define MACRO_COMBINE_1(MACRO, ARGS_COUNT) MACRO_COMBINE_2(MACRO, ARGS_COUNT)
+#define MACRO_COMBINE(MACRO, ARGS_COUNT) MACRO_COMBINE_1(MACRO, ARGS_COUNT)
+
+#define MACRO_LAUNCHER(MACRO, ...)                        \
+  MACRO_COMBINE(MACRO, COUNT_MACRO_VAR_ARGS(__VA_ARGS__)) \
+  (__VA_ARGS__)
+
+// a helper
+#define _LOG_VAR_PACK_(var) \
+#var << ": " << var << ", "
+
+#define _LOG_VAR_1(var) #var << ": " << var
+#define _LOG_VAR_2(var, ...) _LOG_VAR_PACK_(var) << _LOG_VAR_1(__VA_ARGS__)
+#define _LOG_VAR_3(var, ...) _LOG_VAR_PACK_(var) << _LOG_VAR_2(__VA_ARGS__)
+#define _LOG_VAR_4(var, ...) _LOG_VAR_PACK_(var) << _LOG_VAR_3(__VA_ARGS__)
+#define _LOG_VAR_5(var, ...) _LOG_VAR_PACK_(var) << _LOG_VAR_4(__VA_ARGS__)
+#define _LOG_VAR_6(var, ...) _LOG_VAR_PACK_(var) << _LOG_VAR_5(__VA_ARGS__)
+#define _LOG_VAR_7(var, ...) _LOG_VAR_PACK_(var) << _LOG_VAR_6(__VA_ARGS__)
+#define _LOG_VAR_8(var, ...) _LOG_VAR_PACK_(var) << _LOG_VAR_7(__VA_ARGS__)
+#define _LOG_VAR_9(var, ...) _LOG_VAR_PACK_(var) << _LOG_VAR_8(__VA_ARGS__)
+#define _LOG_VAR_10(var, ...) _LOG_VAR_PACK_(var) << _LOG_VAR_9(__VA_ARGS__)
+
+// print variables for debug or something else
+#define LOG_VAR(...)                                                \
+  std::cout << LOG_PREFIX << MACRO_LAUNCHER(_LOG_VAR_, __VA_ARGS__) \
+            << LOG_SUFFIX << std::endl;
+
+// print var value to a file
+#define LOG_VAR_F(flogger, ...)                                               \
+  *(flogger._logerOS) << LOG_PREFIX << MACRO_LAUNCHER(_LOG_VAR_, __VA_ARGS__) \
+                      << LOG_SUFFIX << std::endl;
 
 } // namespace ns_log
 
