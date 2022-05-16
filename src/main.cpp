@@ -34,7 +34,7 @@ void fos() {
   flogger.info("this is a 'info' message");
   LOG_INFO_F(flogger, "this is a 'info' message");
   flogger.process("we all know that 'pi' equals to ", M_PI);
-  LOG_PLAINTEXT_F(flogger, "we all know that 'pi' equals to ", M_PI);
+  LOG_PROCESS_F(flogger, "we all know that 'pi' equals to ", M_PI);
   flogger.warning("It's time to eat!");
   LOG_WARNING_F(flogger, "It's time to eat!");
   flogger.error("the file hasn't been closed! (", false, ")");

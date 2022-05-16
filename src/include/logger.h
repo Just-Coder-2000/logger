@@ -75,19 +75,10 @@ namespace ns_log {
 
       template <typename... ArgvsType>
       Logger &operator()(const std::string &desc, fmt::terminal_color color, const ArgvsType &...argvs) {
-        std::stringstream stream1;
-        stream1 << std::fixed << std::setprecision(3);
-        this->getMessageHeader(stream1, desc, color);
-        (*this->_logerOS) << stream1.str();
-
-        std::stringstream stream2;
-        Logger::__print__(stream2, argvs...);
-        if (this->_logerOS == &std::cout) {
-          *(this->_logerOS) << fmt::format(fmt::fg(color) | fmt::emphasis::italic, "{}", stream2.str());
-        } else {
-          *(this->_logerOS) << fmt::format("{}", stream2.str());
-        }
-
+        std::stringstream stream;
+        Logger::__print__(stream, argvs...);
+        *(this->_logerOS) << this->getMessageHeader(desc, color) << ' '
+                          << this->getMessage(stream.str(), color);
         return *this;
       }
 
@@ -95,11 +86,7 @@ namespace ns_log {
       Logger &plaintext(const ArgvsType &...argvs) {
         std::stringstream stream;
         Logger::__print__(stream, argvs...);
-        if (this->_logerOS == &std::cout) {
-          *(this->_logerOS) << fmt::format(fmt::emphasis::italic, "{}", stream.str());
-        } else {
-          *(this->_logerOS) << fmt::format("{}", stream.str());
-        }
+        *(this->_logerOS) << this->getMessage(stream.str(), fmt::terminal_color::white);
         return *this;
       }
 
@@ -133,7 +120,9 @@ namespace ns_log {
         return *this;
       }
 
-      virtual void getMessageHeader(std::ostream &os, const std::string &desc, fmt::terminal_color color) = 0;
+      virtual std::string getMessageHeader(const std::string &desc, fmt::terminal_color color) = 0;
+
+      virtual std::string getMessage(const std::string &msg, fmt::terminal_color color) = 0;
 
     protected:
       Logger &__print__(std::ostream &os) {
@@ -157,7 +146,7 @@ namespace ns_log {
       /**
        * @brief get the time when the message is outputed
        *
-       * @return int64_t
+       * @return double
        */
       double curTime() {
         auto now = std::chrono::system_clock::now();
@@ -183,10 +172,14 @@ namespace ns_log {
 
     virtual ~StdLogger() {}
 
-    virtual void getMessageHeader(std::ostream &os, const std::string &desc, fmt::terminal_color color) override {
-      os << '[' << fmt::format(fmt::fg(color) | fmt::emphasis::bold, " {} ", desc) << "]-";
-      os << '[' << fmt::format(fmt::fg(color) | fmt::emphasis::italic, " {:.6f}(s) ", Logger::curTime()) << "] ";
-      return;
+    virtual std::string getMessageHeader(const std::string &desc, fmt::terminal_color color) override {
+      auto flag = fmt::format(fmt::fg(color) | fmt::emphasis::bold, "{}", desc);
+      auto tm = fmt::format(fmt::fg(color) | fmt::emphasis::italic, "{:.6f}(s)", Logger::curTime());
+      return fmt::format("[ {0} ]-[ {1} ]", flag, tm);
+    }
+
+    virtual std::string getMessage(const std::string &msg, fmt::terminal_color color) override {
+      return fmt::format(fmt::fg(color) | fmt::emphasis::italic, "{}", msg);
     }
   };
 
@@ -198,9 +191,12 @@ namespace ns_log {
       delete this->_logerOS;
     }
 
-    virtual void getMessageHeader(std::ostream &os, const std::string &desc, fmt::terminal_color color) override {
-      os << fmt::format("[ {0} ]-[ {1:.6f}(s) ] ", desc, Logger::curTime());
-      return;
+    virtual std::string getMessageHeader(const std::string &desc, fmt::terminal_color color) override {
+      return fmt::format("[ {0} ]-[ {1:.6f}(s) ]", desc, Logger::curTime());
+    }
+
+    virtual std::string getMessage(const std::string &msg, fmt::terminal_color color) override {
+      return msg;
     }
   };
 
