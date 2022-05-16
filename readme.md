@@ -48,15 +48,28 @@ format macroes for STL containers
 ## 2. Usage
 <img src="./img/code.png">
 
+output
+
+<img src="./img/output.png" width=80%>
+
 the log file is [here](./log.log)
 
-```log
-[  info   ]-[ 1645249195.619 ] this is a 'info' message
-[ process ]-[ 1645249195.619 ] we all know that 'pi' equals to 3.14159
-[ warning ]-[ 1645249195.619 ] It's time to eat!
-[  error  ]-[ 1645249195.619 ] the file hasn't been closed! (0)
-[  fatal  ]-[ 1645249195.619 ] the vector elems are: [1, 5, 6, 2, 4, 78]
-[  info   ]-[ 1645249195.619 ] the standard of the lang is: [{'python': 3.8}, {'cpp': std11}]
+```apl
+[ info ]-[ 1652686148.957303(s) ] this is a 'info' message
+[ info ]-[ 1652686148.957350(s) ] this is a 'info' message
+[ process ]-[ 1652686148.957363(s) ] we all know that 'pi' equals to 3.14159
+[ process ]-[ 1652686148.957405(s) ] we all know that 'pi' equals to 3.14159
+[ warning ]-[ 1652686148.957417(s) ] It's time to eat!
+[ warning ]-[ 1652686148.957428(s) ] It's time to eat!
+[ error ]-[ 1652686148.957438(s) ] the file hasn't been closed! (0)
+[ error ]-[ 1652686148.957451(s) ] the file hasn't been closed! (0)
+[ fatal ]-[ 1652686148.957462(s) ] the vector elems are: [1, 5, 6, 2, 4, 78]
+[ fatal ]-[ 1652686148.957474(s) ] the vector elems are: [1, 5, 6, 2, 4, 78]
+[ info ]-[ 1652686148.957485(s) ] the standard of the langs are: [{'python': 3.8}, {'cpp': std11}]
+[ info ]-[ 1652686148.957499(s) ] the standard of the langs are: [{'python': 3.8}, {'cpp': std11}]
+Hello, world!
+Hello, world!
+-- m: [{'python': 3.8}, {'cpp': std11}], pi: 3.14159
 ```
 
 ## 3. Structure
