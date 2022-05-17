@@ -21,7 +21,7 @@
 #include <vector>
 
 /**
- * @brief the main message type macroes:
+ * @brief the main message type macros:
  * everything that overrides the operator '<<' can use the static functions.
  *
  * @param info
@@ -45,7 +45,7 @@
  * [3] std::set std::multiset std::unordered_set std::unordered_multiset
  * [4] std::vector std::list std::deque std::array
  *
- * @brief the macroes to control the using of the STL containers output format
+ * @brief the macros to control the using of the STL containers output format
  * [1] FORMAT_MAP FORMAT_MULTIMAP FORMAT_UNORDERED_MAP FORMAT_UNORDERED_MULTIMAP
  * [2] FORMAT_SET FORMAT_UNORDERED_SET FORMAT_MULTISET FORMAT_UNORDERED_MULTISET
  * [3] FORMAT_VECTOR FORMAT_LIST FORMAT_DEQUE FORMAT_ARRAY
@@ -63,60 +63,60 @@ namespace ns_log {
       /**
        * @brief the members
        */
-      std::ostream *_logerOS;
+      std::ostream *_loggerOS;
 
     public:
       /**
        * @brief construct a new Logger object
        */
-      Logger(std::ostream *os) : _logerOS(os) {}
+      explicit Logger(std::ostream *os) : _loggerOS(os) {}
 
-      virtual ~Logger() {}
+      virtual ~Logger() = default;
 
-      template <typename... ArgvsType>
-      Logger &operator()(const std::string &desc, fmt::terminal_color color, const ArgvsType &...argvs) {
+      template <typename... ArgsType>
+      Logger &operator()(const std::string &desc, fmt::terminal_color color, const ArgsType &...args) {
         std::stringstream stream;
-        Logger::__print__(stream, argvs...);
-        *(this->_logerOS) << this->getMessageHeader(desc, color) << ' '
+        Logger::_print_(stream, args...);
+        *(this->_loggerOS) << this->getMessageHeader(desc, color) << ' '
                           << this->getMessage(stream.str(), color);
         return *this;
       }
 
-      template <typename... ArgvsType>
-      Logger &plaintext(const ArgvsType &...argvs) {
+      template <typename... ArgsType>
+      Logger &plaintext(const ArgsType &...args) {
         std::stringstream stream;
-        Logger::__print__(stream, argvs...);
-        *(this->_logerOS) << this->getMessage(stream.str(), fmt::terminal_color::white);
+        Logger::_print_(stream, args...);
+        *(this->_loggerOS) << this->getMessage(stream.str(), fmt::terminal_color::white);
         return *this;
       }
 
-      template <typename... ArgvsType>
-      Logger &info(const ArgvsType &...argvs) {
-        (*this)("info", fmt::terminal_color::bright_green, argvs...);
+      template <typename... ArgsType>
+      Logger &info(const ArgsType &...args) {
+        (*this)("info", fmt::terminal_color::bright_green, args...);
         return *this;
       }
 
-      template <typename... ArgvsType>
-      Logger &warning(const ArgvsType &...argvs) {
-        (*this)("warning", fmt::terminal_color::bright_yellow, argvs...);
+      template <typename... ArgsType>
+      Logger &warning(const ArgsType &...args) {
+        (*this)("warning", fmt::terminal_color::bright_yellow, args...);
         return *this;
       }
 
-      template <typename... ArgvsType>
-      Logger &process(const ArgvsType &...argvs) {
-        (*this)("process", fmt::terminal_color::bright_blue, argvs...);
+      template <typename... ArgsType>
+      Logger &process(const ArgsType &...args) {
+        (*this)("process", fmt::terminal_color::bright_blue, args...);
         return *this;
       }
 
-      template <typename... ArgvsType>
-      Logger &fatal(const ArgvsType &...argvs) {
-        (*this)("fatal", fmt::terminal_color::bright_magenta, argvs...);
+      template <typename... ArgsType>
+      Logger &fatal(const ArgsType &...args) {
+        (*this)("fatal", fmt::terminal_color::bright_magenta, args...);
         return *this;
       }
 
-      template <typename... ArgvsType>
-      Logger &error(const ArgvsType &...argvs) {
-        (*this)("error", fmt::terminal_color::bright_red, argvs...);
+      template <typename... ArgsType>
+      Logger &error(const ArgsType &...args) {
+        (*this)("error", fmt::terminal_color::bright_red, args...);
         return *this;
       }
 
@@ -125,37 +125,31 @@ namespace ns_log {
       virtual std::string getMessage(const std::string &msg, fmt::terminal_color color) = 0;
 
     protected:
-      Logger &__print__(std::ostream &os) {
+      Logger &_print_(std::ostream &os) {
         os << '\n';
         return *this;
       }
 
-      template <typename ArgvType>
-      Logger &__print__(std::ostream &os, const ArgvType &argv) {
-        os << argv << '\n';
-        return *this;
-      }
-
-      template <typename ArgvType, typename... ArgvsType>
-      Logger &__print__(std::ostream &os, const ArgvType &argv, const ArgvsType &...argvs) {
-        os << argv;
-        Logger::__print__(os, argvs...);
+      template <typename ArgType, typename... ArgsType>
+      Logger &_print_(std::ostream &os, const ArgType &arg, const ArgsType &...args) {
+        os << arg;
+        Logger::_print_(os, args...);
         return *this;
       }
 
       /**
-       * @brief get the time when the message is outputed
+       * @brief get the time when the message is outputted
        *
        * @return double
        */
-      double curTime() {
+      static double curTime() {
         auto now = std::chrono::system_clock::now();
         return std::chrono::time_point_cast<std::chrono::duration<double>>(now)
             .time_since_epoch()
             .count();
       }
 
-    protected:
+    public:
       Logger() = delete;
       Logger(const Logger &) = delete;
       Logger(Logger &&) = delete;
@@ -168,34 +162,34 @@ namespace ns_log {
   class StdLogger : public ns_priv::Logger {
 
   public:
-    StdLogger(std::ostream &os) : Logger(&os) {}
+    explicit StdLogger(std::ostream &os) : Logger(&os) {}
 
-    virtual ~StdLogger() {}
+    ~StdLogger() override = default;
 
-    virtual std::string getMessageHeader(const std::string &desc, fmt::terminal_color color) override {
+    std::string getMessageHeader(const std::string &desc, fmt::terminal_color color) override {
       auto flag = fmt::format(fmt::fg(color) | fmt::emphasis::bold, "{}", desc);
       auto tm = fmt::format(fmt::fg(color) | fmt::emphasis::italic, "{:.6f}(s)", Logger::curTime());
-      return fmt::format("[ {0} ]-[ {1} ]", flag, tm);
+      return fmt::format("[{0}]-[{1}]", flag, tm);
     }
 
-    virtual std::string getMessage(const std::string &msg, fmt::terminal_color color) override {
+    std::string getMessage(const std::string &msg, fmt::terminal_color color) override {
       return fmt::format(fmt::fg(color) | fmt::emphasis::italic, "{}", msg);
     }
   };
 
   class FileLogger : public ns_priv::Logger {
   public:
-    FileLogger(const std::string &filename) : Logger(new std::ofstream(filename, std::ios::out)) {}
+    explicit FileLogger(const std::string &filename) : Logger(new std::ofstream(filename, std::ios::out)) {}
 
-    virtual ~FileLogger() {
-      delete this->_logerOS;
+    ~FileLogger() override {
+      delete this->_loggerOS;
     }
 
-    virtual std::string getMessageHeader(const std::string &desc, fmt::terminal_color color) override {
-      return fmt::format("[ {0} ]-[ {1:.6f}(s) ]", desc, Logger::curTime());
+    std::string getMessageHeader(const std::string &desc, fmt::terminal_color color) override {
+      return fmt::format("[{0}]-[{1:.6f}(s)]", desc, Logger::curTime());
     }
 
-    virtual std::string getMessage(const std::string &msg, fmt::terminal_color color) override {
+    std::string getMessage(const std::string &msg, fmt::terminal_color color) override {
       return msg;
     }
   };
@@ -207,13 +201,13 @@ namespace ns_log {
      * @param _firName_ the describe name for the first element of the std::pair
      * @param _sedName_ the describe name for the second element of the std::pair
      */
-    static const std::string _splitor_(", ");
+    static const std::string splitor(", ");
 
     static StdLogger stdCoutLogger(std::cout);
   } // namespace ns_priv
 
   /**
-   * @brief the main message type macroes
+   * @brief the main message type macros
    *
    * [0] plaintext {the plain text}
    * [1] info    {Information; Message; real-time info Of information; Of messages; Informative}
@@ -224,54 +218,54 @@ namespace ns_log {
    *
    */
 
-  template <typename... ArgvsType>
-  static ns_priv::Logger &plaintext(const ArgvsType &...argvs) {
-    return ns_log::ns_priv::stdCoutLogger.plaintext(argvs...);
+  template <typename... ArgsType>
+  static ns_priv::Logger &plaintext(const ArgsType &...args) {
+    return ns_log::ns_priv::stdCoutLogger.plaintext(args...);
   }
 #define LOG_PLAINTEXT(...) \
   ns_log::ns_priv::stdCoutLogger.plaintext(__VA_ARGS__);
 #define LOG_PLAINTEXT_F(flogger, ...) \
   flogger.plaintext(__VA_ARGS__);
 
-  template <typename... ArgvsType>
-  static ns_priv::Logger &info(const ArgvsType &...argvs) {
-    return ns_log::ns_priv::stdCoutLogger.info(argvs...);
+  template <typename... ArgsType>
+  static ns_priv::Logger &info(const ArgsType &...args) {
+    return ns_log::ns_priv::stdCoutLogger.info(args...);
   }
 #define LOG_INFO(...) \
   ns_log::ns_priv::stdCoutLogger.info(__VA_ARGS__);
 #define LOG_INFO_F(flogger, ...) \
   flogger.info(__VA_ARGS__);
 
-  template <typename... ArgvsType>
-  static ns_priv::Logger &process(const ArgvsType &...argvs) {
-    return ns_log::ns_priv::stdCoutLogger.process(argvs...);
+  template <typename... ArgsType>
+  static ns_priv::Logger &process(const ArgsType &...args) {
+    return ns_log::ns_priv::stdCoutLogger.process(args...);
   }
 #define LOG_PROCESS(...) \
   ns_log::ns_priv::stdCoutLogger.process(__VA_ARGS__);
 #define LOG_PROCESS_F(flogger, ...) \
   flogger.process(__VA_ARGS__);
 
-  template <typename... ArgvsType>
-  static ns_priv::Logger &warning(const ArgvsType &...argvs) {
-    return ns_log::ns_priv::stdCoutLogger.warning(argvs...);
+  template <typename... ArgsType>
+  static ns_priv::Logger &warning(const ArgsType &...args) {
+    return ns_log::ns_priv::stdCoutLogger.warning(args...);
   }
 #define LOG_WARNING(...) \
   ns_log::ns_priv::stdCoutLogger.warning(__VA_ARGS__);
 #define LOG_WARNING_F(flogger, ...) \
   flogger.warning(__VA_ARGS__);
 
-  template <typename... ArgvsType>
-  static ns_priv::Logger &error(const ArgvsType &...argvs) {
-    return ns_log::ns_priv::stdCoutLogger.error(argvs...);
+  template <typename... ArgsType>
+  static ns_priv::Logger &error(const ArgsType &...args) {
+    return ns_log::ns_priv::stdCoutLogger.error(args...);
   }
 #define LOG_ERROR(...) \
   ns_log::ns_priv::stdCoutLogger.error(__VA_ARGS__);
 #define LOG_ERROR_F(flogger, ...) \
   flogger.error(__VA_ARGS__);
 
-  template <typename... ArgvsType>
-  static ns_priv::Logger &fatal(const ArgvsType &...argvs) {
-    return ns_log::ns_priv::stdCoutLogger.fatal(argvs...);
+  template <typename... ArgsType>
+  static ns_priv::Logger &fatal(const ArgsType &...args) {
+    return ns_log::ns_priv::stdCoutLogger.fatal(args...);
   }
 #define LOG_FATAL(...) \
   ns_log::ns_priv::stdCoutLogger.fatal(__VA_ARGS__);
@@ -318,8 +312,14 @@ namespace ns_log {
 
 // print var value to a file
 #define LOG_VAR_F(flogger, ...)                                               \
-  *(flogger._logerOS) << LOG_PREFIX << MACRO_LAUNCHER(_LOG_VAR_, __VA_ARGS__) \
+  *(flogger._loggerOS) << LOG_PREFIX << MACRO_LAUNCHER(_LOG_VAR_, __VA_ARGS__) \
                       << LOG_SUFFIX << std::endl;
+
+#define LOG_ENDL() \
+  std::cout << std::endl;
+
+#define LOG_ENDL_F(flogger) \
+  *(flogger._loggerOS) << std::endl;
 
 } // namespace ns_log
 
@@ -338,7 +338,7 @@ std::ostream &operator<<(std::ostream &os, const std::pair<Key, Val> &p) {
  * @brief output format for container
  */
 template <typename ConType>
-std::ostream &orderedConer(std::ostream &os, const ConType &s) {
+std::ostream &orderedContainer(std::ostream &os, const ConType &s) {
   os << '[';
   if (s.empty()) {
     os << "]";
@@ -346,7 +346,7 @@ std::ostream &orderedConer(std::ostream &os, const ConType &s) {
   }
   auto iter = s.cbegin();
   for (; iter != (--s.cend()); ++iter)
-    os << *iter << ns_log::ns_priv::_splitor_;
+    os << *iter << ns_log::ns_priv::splitor;
   os << *iter << ']';
   return os;
 }
@@ -355,7 +355,7 @@ std::ostream &orderedConer(std::ostream &os, const ConType &s) {
  * @brief output format for unordered container
  */
 template <typename ConType>
-std::ostream &unorderedConer(std::ostream &os, const ConType &c) {
+std::ostream &unorderedContainer(std::ostream &os, const ConType &c) {
   os << '[';
   if (c.empty()) {
     os << "]";
@@ -363,10 +363,10 @@ std::ostream &unorderedConer(std::ostream &os, const ConType &c) {
   }
   std::stringstream stream;
   for (const auto &elem : c)
-    stream << elem << ns_log::ns_priv::_splitor_;
+    stream << elem << ns_log::ns_priv::splitor;
   std::string str = stream.str();
   os << std::string_view(str.c_str(),
-                         str.size() - ns_log::ns_priv::_splitor_.size())
+                         str.size() - ns_log::ns_priv::splitor.size())
      << ']';
   return os;
 }
@@ -381,7 +381,7 @@ std::ostream &unorderedConer(std::ostream &os, const ConType &c) {
  */
 template <typename Key, typename Val>
 std::ostream &operator<<(std::ostream &os, const std::map<Key, Val> &m) {
-  return orderedConer(os, m);
+  return orderedContainer(os, m);
 }
 #endif
 
@@ -392,7 +392,7 @@ std::ostream &operator<<(std::ostream &os, const std::map<Key, Val> &m) {
  */
 template <typename Key, typename Val>
 std::ostream &operator<<(std::ostream &os, const std::multimap<Key, Val> &m) {
-  return orderedConer(os, m);
+  return orderedContainer(os, m);
 }
 #endif
 
@@ -404,7 +404,7 @@ std::ostream &operator<<(std::ostream &os, const std::multimap<Key, Val> &m) {
 template <typename Key, typename Val>
 std::ostream &operator<<(std::ostream &os,
                          const std::unordered_map<Key, Val> &m) {
-  return unorderedConer(os, m);
+  return unorderedContainer(os, m);
 }
 
 #endif
@@ -417,7 +417,7 @@ std::ostream &operator<<(std::ostream &os,
 template <typename Key, typename Val>
 std::ostream &operator<<(std::ostream &os,
                          const std::unordered_multimap<Key, Val> &m) {
-  return unorderedConer(os, m);
+  return unorderedContainer(os, m);
 }
 #endif
 
@@ -432,7 +432,7 @@ std::ostream &operator<<(std::ostream &os,
  */
 template <typename Val>
 std::ostream &operator<<(std::ostream &os, const std::set<Val> &s) {
-  return orderedConer(os, s);
+  return orderedContainer(os, s);
 }
 #endif
 
@@ -443,7 +443,7 @@ std::ostream &operator<<(std::ostream &os, const std::set<Val> &s) {
  */
 template <typename Val>
 std::ostream &operator<<(std::ostream &os, const std::unordered_set<Val> &s) {
-  return unorderedConer(os, s);
+  return unorderedContainer(os, s);
 }
 #endif
 
@@ -454,7 +454,7 @@ std::ostream &operator<<(std::ostream &os, const std::unordered_set<Val> &s) {
  */
 template <typename Val>
 std::ostream &operator<<(std::ostream &os, const std::multiset<Val> &s) {
-  return orderedConer(os, s);
+  return orderedContainer(os, s);
 }
 #endif
 
@@ -466,7 +466,7 @@ std::ostream &operator<<(std::ostream &os, const std::multiset<Val> &s) {
 template <typename Val>
 std::ostream &operator<<(std::ostream &os,
                          const std::unordered_multiset<Val> &s) {
-  return unorderedConer(os, s);
+  return unorderedContainer(os, s);
 }
 #endif
 #pragma endregion
@@ -480,7 +480,7 @@ std::ostream &operator<<(std::ostream &os,
  */
 template <typename Val>
 std::ostream &operator<<(std::ostream &os, const std::vector<Val> &s) {
-  return orderedConer(os, s);
+  return orderedContainer(os, s);
 }
 #endif
 
@@ -491,7 +491,7 @@ std::ostream &operator<<(std::ostream &os, const std::vector<Val> &s) {
  */
 template <typename Val>
 std::ostream &operator<<(std::ostream &os, const std::list<Val> &s) {
-  return orderedConer(os, s);
+  return orderedContainer(os, s);
 }
 #endif
 
@@ -502,7 +502,7 @@ std::ostream &operator<<(std::ostream &os, const std::list<Val> &s) {
  */
 template <typename Val>
 std::ostream &operator<<(std::ostream &os, const std::deque<Val> &s) {
-  return orderedConer(os, s);
+  return orderedContainer(os, s);
 }
 #endif
 
@@ -515,7 +515,7 @@ template <typename Val, std::size_t Size>
 std::ostream &operator<<(std::ostream &os, const std::array<Val, Size> &s) {
   os << '[';
   for (int i = 0; i != s.size() - 1; ++i)
-    os << s[i] << ns_log::ns_priv::_splitor_;
+    os << s[i] << ns_log::ns_priv::splitor;
   os << s.back() << ']';
   return os;
 }
@@ -535,7 +535,7 @@ std::ostream &operator<<(std::ostream &os, const std::stack<Val> &s) {
   os << "['top' ";
   auto cs = s;
   while (cs.size() != 1) {
-    os << cs.top() << ns_log::ns_priv::_splitor_;
+    os << cs.top() << ns_log::ns_priv::splitor;
     cs.pop();
   }
   os << cs.top() << "]";
@@ -557,7 +557,7 @@ std::ostream &operator<<(std::ostream &os, const std::queue<Val> &q) {
   os << "['front' ";
   auto cq = q;
   while (cq.size() != 1) {
-    os << cq.front() << ns_log::ns_priv::_splitor_;
+    os << cq.front() << ns_log::ns_priv::splitor;
     cq.pop();
   }
   os << cq.front() << "]";

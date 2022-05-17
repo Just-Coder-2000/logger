@@ -3,7 +3,7 @@ skinparam DefaultFontName "Ubuntu Mono"
 scale 200
 
 abstract Logger{
-    # _logerOS
+    # _loggerOS
     + info(argvs)
     + warning(argvs)
     + process(argvs)

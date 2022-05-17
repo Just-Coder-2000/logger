@@ -55,20 +55,27 @@ output
 the log file is [here](./log.log)
 
 ```apl
-[ info ]-[ 1652699655.770002(s) ] this is a 'info' message
-[ info ]-[ 1652699655.770010(s) ] this is a 'info' message
-[ process ]-[ 1652699655.770016(s) ] we all know that 'pi' equals to 3.14159
-[ process ]-[ 1652699655.770021(s) ] we all know that 'pi' equals to 3.14159
-[ warning ]-[ 1652699655.770024(s) ] It's time to eat!
-[ warning ]-[ 1652699655.770028(s) ] It's time to eat!
-[ error ]-[ 1652699655.770031(s) ] the file hasn't been closed! (0)
-[ error ]-[ 1652699655.770035(s) ] the file hasn't been closed! (0)
-[ fatal ]-[ 1652699655.770040(s) ] the vector elems are: [1, 5, 6, 2, 4, 78]
-[ fatal ]-[ 1652699655.770045(s) ] the vector elems are: [1, 5, 6, 2, 4, 78]
-[ info ]-[ 1652699655.770051(s) ] the standard of the lang is: [{'python': 3.8}, {'cpp': std11}]
-[ info ]-[ 1652699655.770057(s) ] the standard of the lang is: [{'python': 3.8}, {'cpp': std11}]
+[info]-[1652791437.802533(s)] this is a 'info' message
+[info]-[1652791437.802539(s)] this is a 'info' message
+
+[process]-[1652791437.802588(s)] we all know that 'pi' equals to 3.14159
+[process]-[1652791437.802593(s)] we all know that 'pi' equals to 3.14159
+
+[warning]-[1652791437.802604(s)] It's time to eat!
+[warning]-[1652791437.802607(s)] It's time to eat!
+
+[error]-[1652791437.802616(s)] the file hasn't been closed! (0)
+[error]-[1652791437.802619(s)] the file hasn't been closed! (0)
+
+[fatal]-[1652791437.802628(s)] the vector elems are: [1, 5, 6, 2, 4, 78]
+[fatal]-[1652791437.802632(s)] the vector elems are: [1, 5, 6, 2, 4, 78]
+
+[info]-[1652791437.802691(s)] the standard of the lang is: [{'python': 3.8}, {'cpp': std11}]
+[info]-[1652791437.802698(s)] the standard of the lang is: [{'python': 3.8}, {'cpp': std11}]
+
 Hello, world
 Hello, world
+
 -- m: [{'python': 3.8}, {'cpp': std11}], pi: 3.14159
 ```
 
