@@ -9,8 +9,6 @@
  * @copyright Copyright (c) 2022
  */
 
-#include "fmt/color.h"
-#include "fmt/format.h"
 #include <chrono>
 #include <fstream>
 #include <iomanip>
@@ -55,6 +53,16 @@
 namespace ns_log {
 
   namespace ns_priv {
+
+#define LOG_STYLE_NONE std::string("\033[0m")
+#define LOG_STYLE_BOLD std::string("\033[1m")
+#define LOG_STYLE_ITALIC std::string("\033[3m")
+#define LOG_STYLE_INFO std::string("\033[92m")
+#define LOG_STYLE_PROCESS std::string("\033[94m")
+#define LOG_STYLE_ERROR std::string("\033[91m")
+#define LOG_STYLE_WARNING std::string("\033[93m")
+#define LOG_STYLE_FATAL std::string("\033[95m")
+
     /**
      * @brief base logger
      */
@@ -74,11 +82,11 @@ namespace ns_log {
       virtual ~Logger() = default;
 
       template <typename... ArgsType>
-      Logger &operator()(const std::string &desc, fmt::terminal_color color, const ArgsType &...args) {
+      Logger &operator()(const std::string &desc, const std::string &color, const ArgsType &...args) {
         std::stringstream stream;
         Logger::_print_(stream, args...);
         *(this->_loggerOS) << this->getMessageHeader(desc, color) << ' '
-                          << this->getMessage(stream.str(), color);
+                           << this->getMessage(stream.str(), color);
         return *this;
       }
 
@@ -86,43 +94,43 @@ namespace ns_log {
       Logger &plaintext(const ArgsType &...args) {
         std::stringstream stream;
         Logger::_print_(stream, args...);
-        *(this->_loggerOS) << this->getMessage(stream.str(), fmt::terminal_color::white);
+        *(this->_loggerOS) << this->getMessage(stream.str(), "");
         return *this;
       }
 
       template <typename... ArgsType>
       Logger &info(const ArgsType &...args) {
-        (*this)("info", fmt::terminal_color::bright_green, args...);
+        (*this)("info", LOG_STYLE_INFO, args...);
         return *this;
       }
 
       template <typename... ArgsType>
       Logger &warning(const ArgsType &...args) {
-        (*this)("warning", fmt::terminal_color::bright_yellow, args...);
+        (*this)("warning", LOG_STYLE_WARNING, args...);
         return *this;
       }
 
       template <typename... ArgsType>
       Logger &process(const ArgsType &...args) {
-        (*this)("process", fmt::terminal_color::bright_blue, args...);
+        (*this)("process", LOG_STYLE_PROCESS, args...);
         return *this;
       }
 
       template <typename... ArgsType>
       Logger &fatal(const ArgsType &...args) {
-        (*this)("fatal", fmt::terminal_color::bright_magenta, args...);
+        (*this)("fatal", LOG_STYLE_FATAL, args...);
         return *this;
       }
 
       template <typename... ArgsType>
       Logger &error(const ArgsType &...args) {
-        (*this)("error", fmt::terminal_color::bright_red, args...);
+        (*this)("error", LOG_STYLE_ERROR, args...);
         return *this;
       }
 
-      virtual std::string getMessageHeader(const std::string &desc, fmt::terminal_color color) = 0;
+      virtual std::string getMessageHeader(const std::string &desc, const std::string &color) = 0;
 
-      virtual std::string getMessage(const std::string &msg, fmt::terminal_color color) = 0;
+      virtual std::string getMessage(const std::string &msg, const std::string &color) = 0;
 
     protected:
       Logger &_print_(std::ostream &os) {
@@ -166,14 +174,23 @@ namespace ns_log {
 
     ~StdLogger() override = default;
 
-    std::string getMessageHeader(const std::string &desc, fmt::terminal_color color) override {
-      auto flag = fmt::format(fmt::fg(color) | fmt::emphasis::bold, "{}", desc);
-      auto tm = fmt::format(fmt::fg(color) | fmt::emphasis::italic, "{:.6f}(s)", Logger::curTime());
-      return fmt::format("[{0}]-[{1}]", flag, tm);
+    std::string getMessageHeader(const std::string &desc, const std::string &color) override {
+#ifdef __linux__
+      auto flag = '[' + LOG_STYLE_BOLD + color + desc + LOG_STYLE_NONE + ']';
+      auto tm = '[' + LOG_STYLE_ITALIC + color + std::to_string(Logger::curTime()) +
+                "(S)" + LOG_STYLE_NONE + ']';
+      return flag + '-' + tm;
+#else
+      return '[' + desc + "]-[" + std::to_string(Logger::curTime()) + ']';
+#endif
     }
 
-    std::string getMessage(const std::string &msg, fmt::terminal_color color) override {
-      return fmt::format(fmt::fg(color) | fmt::emphasis::italic, "{}", msg);
+    std::string getMessage(const std::string &msg, const std::string &color) override {
+#ifdef __linux__
+      return LOG_STYLE_ITALIC + color + msg + LOG_STYLE_NONE;
+#else
+      return msg;
+#endif
     }
   };
 
@@ -185,14 +202,23 @@ namespace ns_log {
       delete this->_loggerOS;
     }
 
-    std::string getMessageHeader(const std::string &desc, fmt::terminal_color color) override {
-      return fmt::format("[{0}]-[{1:.6f}(s)]", desc, Logger::curTime());
+    std::string getMessageHeader(const std::string &desc, const std::string &color) override {
+      return '[' + desc + "]-[" + std::to_string(Logger::curTime()) + ']';
     }
 
-    std::string getMessage(const std::string &msg, fmt::terminal_color color) override {
+    std::string getMessage(const std::string &msg, const std::string &color) override {
       return msg;
     }
   };
+
+#undef LOG_STYLE_NONE
+#undef LOG_STYLE_BOLD
+#undef LOG_STYLE_ITALIC
+#undef LOG_STYLE_INFO
+#undef LOG_STYLE_PROCESS
+#undef LOG_STYLE_ERROR
+#undef LOG_STYLE_WARNING
+#undef LOG_STYLE_FATAL
 
   namespace ns_priv {
     /**
@@ -311,9 +337,9 @@ namespace ns_log {
             << LOG_SUFFIX << std::endl;
 
 // print var value to a file
-#define LOG_VAR_F(flogger, ...)                                               \
+#define LOG_VAR_F(flogger, ...)                                                \
   *(flogger._loggerOS) << LOG_PREFIX << MACRO_LAUNCHER(_LOG_VAR_, __VA_ARGS__) \
-                      << LOG_SUFFIX << std::endl;
+                       << LOG_SUFFIX << std::endl;
 
 #define LOG_ENDL() \
   std::cout << std::endl;
