@@ -181,7 +181,7 @@ namespace ns_log {
                 "(S)" + LOG_STYLE_NONE + ']';
       return flag + '-' + tm;
 #else
-      return '[' + desc + "]-[" + std::to_string(Logger::curTime()) + ']';
+      return '[' + desc + "]-[" + std::to_string(Logger::curTime()) + "(S)]";
 #endif
     }
 
@@ -203,7 +203,7 @@ namespace ns_log {
     }
 
     std::string getMessageHeader(const std::string &desc, const std::string &color) override {
-      return '[' + desc + "]-[" + std::to_string(Logger::curTime()) + ']';
+      return '[' + desc + "]-[" + std::to_string(Logger::curTime()) + "(S)]";
     }
 
     std::string getMessage(const std::string &msg, const std::string &color) override {
