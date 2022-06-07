@@ -10,6 +10,7 @@
  */
 
 #include <chrono>
+#include <ctime>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -19,35 +20,28 @@
 #include <vector>
 
 /**
- * @brief the main message type macros:
- * everything that overrides the operator '<<' can use the static functions.
  *
- * @param info
- * {Information; Message; real-time info Of information; Of messages;
- * Informative}
- * @param process
- * {The process of achieving a goal; The development of things, especially the
- * steps of natural change;}
- * @param warning
- * {about possible accidents, etc.; a warning, warning, etc about the punishment
- * to be suffered}
- * @param error
- * {Error; Errors; Fallacy;}
- * @param fatal
- * {Fatal; Catastrophic; Destructive; Cause failure}
+ * @brief the main message type macros
+ * [0] LOG_PLAINTEXT {the plain text}
+ * [1] LOG_INFO    {Information; Message; real-time info Of information; Of messages; Informative}
+ * [2] LOG_PROCESS {The process of achieving a goal; The development of things, especially the steps of natural change;}
+ * [3] LOG_WARNING {about possible accidents, etc.; a warning, warning, etc about the punishment to be suffered}
+ * [4] LOG_ERROR   {Error; Errors; Fallacy;}
+ * [5] LOG_FATAL   {Fatal; Catastrophic; Destructive; Cause failure}
  *
- *
- * @brief output format for containers in the STL.
- * [1] std::pair
- * [2] std::map std::multimap std::unordered_map std::unordered_multimap
- * [3] std::set std::multiset std::unordered_set std::unordered_multiset
- * [4] std::vector std::list std::deque std::array
- *
+ * @brief debug macroes
+ * [1] LOG_VAR print the variables
+ * [2] LOG_ENDL print an end line char '\n'
+
  * @brief the macros to control the using of the STL containers output format
  * [1] FORMAT_MAP FORMAT_MULTIMAP FORMAT_UNORDERED_MAP FORMAT_UNORDERED_MULTIMAP
  * [2] FORMAT_SET FORMAT_UNORDERED_SET FORMAT_MULTISET FORMAT_UNORDERED_MULTISET
  * [3] FORMAT_VECTOR FORMAT_LIST FORMAT_DEQUE FORMAT_ARRAY
  * [4] FORMAT_STACK FORMAT_QUEUE
+ *
+ * @brief time output format
+ * [1] FORMAT_TIME_HMS hh:mm:ss (default mode)
+ * [2] FORMAT_TIME_STAMP time stamp since epoch
  */
 
 namespace ns_log {
@@ -150,11 +144,26 @@ namespace ns_log {
        *
        * @return double
        */
-      static double curTime() {
+      static std::string curTime() {
+#ifdef FORMAT_TIME_HMS
+        const time_t t = time(NULL);
+        auto time = localtime(&t);
+        return std::to_string(time->tm_hour) + ':' +
+               std::to_string(time->tm_min) + ':' +
+               std::to_string(time->tm_sec);
+#elif defined(FORMAT_TIME_STAMP)
         auto now = std::chrono::system_clock::now();
-        return std::chrono::time_point_cast<std::chrono::duration<double>>(now)
-            .time_since_epoch()
-            .count();
+        auto sed = std::chrono::time_point_cast<std::chrono::duration<double>>(now)
+                       .time_since_epoch()
+                       .count();
+        return std::to_string(sed) + "(S)";
+#else
+        const time_t t = time(NULL);
+        auto time = localtime(&t);
+        return std::to_string(time->tm_hour) + ':' +
+               std::to_string(time->tm_min) + ':' +
+               std::to_string(time->tm_sec);
+#endif
       }
 
     public:
@@ -177,11 +186,10 @@ namespace ns_log {
     std::string getMessageHeader(const std::string &desc, const std::string &color) override {
 #ifdef __linux__
       auto flag = '[' + LOG_STYLE_BOLD + color + desc + LOG_STYLE_NONE + ']';
-      auto tm = '[' + LOG_STYLE_ITALIC + color + std::to_string(Logger::curTime()) +
-                "(S)" + LOG_STYLE_NONE + ']';
+      auto tm = '[' + LOG_STYLE_ITALIC + color + Logger::curTime() + LOG_STYLE_NONE + ']';
       return flag + '-' + tm;
 #else
-      return '[' + desc + "]-[" + std::to_string(Logger::curTime()) + "(S)]";
+      return '[' + desc + "]-[" + Logger::curTime() + "]";
 #endif
     }
 
@@ -203,7 +211,7 @@ namespace ns_log {
     }
 
     std::string getMessageHeader(const std::string &desc, const std::string &color) override {
-      return '[' + desc + "]-[" + std::to_string(Logger::curTime()) + "(S)]";
+      return '[' + desc + "]-[" + Logger::curTime() + "]";
     }
 
     std::string getMessage(const std::string &msg, const std::string &color) override {
@@ -231,18 +239,6 @@ namespace ns_log {
 
     static StdLogger stdCoutLogger(std::cout);
   } // namespace ns_priv
-
-  /**
-   * @brief the main message type macros
-   *
-   * [0] plaintext {the plain text}
-   * [1] info    {Information; Message; real-time info Of information; Of messages; Informative}
-   * [2] process {The process of achieving a goal; The development of things, especially the steps of natural change;}
-   * [3] warning {about possible accidents, etc.; a warning, warning, etc about the punishment to be suffered}
-   * [4] error   {Error; Errors; Fallacy;}
-   * [5] fatal   {Fatal; Catastrophic; Destructive; Cause failure}
-   *
-   */
 
   template <typename... ArgsType>
   static ns_priv::Logger &plaintext(const ArgsType &...args) {
