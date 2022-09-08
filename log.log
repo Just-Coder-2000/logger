@@ -1,20 +1,20 @@
-[info]-[19:35:8] this is a 'info' message
-[info]-[19:35:8] this is a 'info' message
+[info]-[13:13:54] this is a 'info' message
+[info]-[13:13:54] this is a 'info' message
 
-[process]-[19:35:8] we all know that 'pi' equals to 3.14159
-[process]-[19:35:8] we all know that 'pi' equals to 3.14159
+[process]-[13:13:54] we all know that 'pi' equals to 3.14159
+[process]-[13:13:54] we all know that 'pi' equals to 3.14159
 
-[warning]-[19:35:8] It's time to eat!
-[warning]-[19:35:8] It's time to eat!
+[warning]-[13:13:54] It's time to eat!
+[warning]-[13:13:54] It's time to eat!
 
-[error]-[19:35:8] the file hasn't been closed! (0)
-[error]-[19:35:8] the file hasn't been closed! (0)
+[error]-[13:13:54] the file hasn't been closed! (0)
+[error]-[13:13:54] the file hasn't been closed! (0)
 
-[fatal]-[19:35:8] the vector elems are: [1, 5, 6, 2, 4, 78]
-[fatal]-[19:35:8] the vector elems are: [1, 5, 6, 2, 4, 78]
+[fatal]-[13:13:54] the vector elems are: [1, 5, 6, 2, 4, 78]
+[fatal]-[13:13:54] the vector elems are: [1, 5, 6, 2, 4, 78]
 
-[info]-[19:35:8] the standard of the lang is: [{'python': 3.8}, {'cpp': std11}]
-[info]-[19:35:8] the standard of the lang is: [{'python': 3.8}, {'cpp': std11}]
+[info]-[13:13:54] the standard of the lang is: [{'python': 3.8}, {'cpp': std11}]
+[info]-[13:13:54] the standard of the lang is: [{'python': 3.8}, {'cpp': std11}]
 
 Hello, world
 Hello, world
