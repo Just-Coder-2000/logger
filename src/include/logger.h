@@ -49,19 +49,19 @@
 /**
  * @brief overload the operator '<<' for std::pair
  */
-template<typename Key, typename Val>
+template <typename Key, typename Val>
 std::ostream &operator<<(std::ostream &os, const std::pair<Key, Val> &p);
 
 /**
  * @brief output format for container
  */
-template<typename ConType>
+template <typename ConType>
 std::ostream &orderedContainer(std::ostream &os, const ConType &s);
 
 /**
  * @brief output format for unordered container
  */
-template<typename ConType>
+template <typename ConType>
 std::ostream &unorderedContainer(std::ostream &os, const ConType &c);
 
 #pragma endregion
@@ -97,7 +97,7 @@ std::ostream &operator<<(std::ostream &os, const std::multimap<Key, Val> &m) {
 /**
  * @brief overload the operator '<<' for std::unordered_map
  */
-template<typename Key, typename Val>
+template <typename Key, typename Val>
 std::ostream &operator<<(std::ostream &os,
                          const std::unordered_map<Key, Val> &m) {
   return unorderedContainer(os, m);
@@ -176,7 +176,7 @@ std::ostream &operator<<(std::ostream &os,
 /**
  * @brief overload the operator '<<' for std::vector
  */
-template<typename Val>
+template <typename Val>
 std::ostream &operator<<(std::ostream &os, const std::vector<Val> &s) {
   return orderedContainer(os, s);
 }
@@ -297,7 +297,12 @@ namespace ns_log {
 
       virtual ~Logger() = default;
 
-      template<typename... ArgsType>
+      Logger *setPrecision(int n) {
+        (*this->_loggerOS) << std::fixed << std::setprecision(n);
+        return this;
+      }
+
+      template <typename... ArgsType>
       Logger &operator()(const std::string &desc, const std::string &color, const ArgsType &...args) {
         std::stringstream stream;
         Logger::_print_(stream, args...);
@@ -306,7 +311,7 @@ namespace ns_log {
         return *this;
       }
 
-      template<typename... ArgsType>
+      template <typename... ArgsType>
       Logger &plaintext(const ArgsType &...args) {
         std::stringstream stream;
         Logger::_print_(stream, args...);
@@ -314,31 +319,31 @@ namespace ns_log {
         return *this;
       }
 
-      template<typename... ArgsType>
+      template <typename... ArgsType>
       Logger &info(const ArgsType &...args) {
         (*this)("info", LOG_STYLE_INFO, args...);
         return *this;
       }
 
-      template<typename... ArgsType>
+      template <typename... ArgsType>
       Logger &warning(const ArgsType &...args) {
         (*this)("warning", LOG_STYLE_WARNING, args...);
         return *this;
       }
 
-      template<typename... ArgsType>
+      template <typename... ArgsType>
       Logger &process(const ArgsType &...args) {
         (*this)("process", LOG_STYLE_PROCESS, args...);
         return *this;
       }
 
-      template<typename... ArgsType>
+      template <typename... ArgsType>
       Logger &fatal(const ArgsType &...args) {
         (*this)("fatal", LOG_STYLE_FATAL, args...);
         return *this;
       }
 
-      template<typename... ArgsType>
+      template <typename... ArgsType>
       Logger &error(const ArgsType &...args) {
         (*this)("error", LOG_STYLE_ERROR, args...);
         return *this;
@@ -354,7 +359,7 @@ namespace ns_log {
         return *this;
       }
 
-      template<typename ArgType, typename... ArgsType>
+      template <typename ArgType, typename... ArgsType>
       Logger &_print_(std::ostream &os, const ArgType &arg, const ArgsType &...args) {
         os << arg;
         Logger::_print_(os, args...);
@@ -466,7 +471,7 @@ namespace ns_log {
     static StdLogger stdCoutLogger(std::cout);
   } // namespace ns_priv
 
-  template<typename... ArgsType>
+  template <typename... ArgsType>
   static ns_priv::Logger &plaintext(const ArgsType &...args) {
     return ns_log::ns_priv::stdCoutLogger.plaintext(args...);
   }
@@ -476,7 +481,7 @@ namespace ns_log {
 #define LOG_PLAINTEXT_F(flogger, ...) \
   flogger.plaintext(__VA_ARGS__);
 
-  template<typename... ArgsType>
+  template <typename... ArgsType>
   static ns_priv::Logger &info(const ArgsType &...args) {
     return ns_log::ns_priv::stdCoutLogger.info(args...);
   }
@@ -486,7 +491,7 @@ namespace ns_log {
 #define LOG_INFO_F(flogger, ...) \
   flogger.info(__VA_ARGS__);
 
-  template<typename... ArgsType>
+  template <typename... ArgsType>
   static ns_priv::Logger &process(const ArgsType &...args) {
     return ns_log::ns_priv::stdCoutLogger.process(args...);
   }
@@ -496,7 +501,7 @@ namespace ns_log {
 #define LOG_PROCESS_F(flogger, ...) \
   flogger.process(__VA_ARGS__);
 
-  template<typename... ArgsType>
+  template <typename... ArgsType>
   static ns_priv::Logger &warning(const ArgsType &...args) {
     return ns_log::ns_priv::stdCoutLogger.warning(args...);
   }
@@ -506,7 +511,7 @@ namespace ns_log {
 #define LOG_WARNING_F(flogger, ...) \
   flogger.warning(__VA_ARGS__);
 
-  template<typename... ArgsType>
+  template <typename... ArgsType>
   static ns_priv::Logger &error(const ArgsType &...args) {
     return ns_log::ns_priv::stdCoutLogger.error(args...);
   }
@@ -516,7 +521,7 @@ namespace ns_log {
 #define LOG_ERROR_F(flogger, ...) \
   flogger.error(__VA_ARGS__);
 
-  template<typename... ArgsType>
+  template <typename... ArgsType>
   static ns_priv::Logger &fatal(const ArgsType &...args) {
     return ns_log::ns_priv::stdCoutLogger.fatal(args...);
   }
@@ -583,7 +588,7 @@ namespace ns_log {
 /**
  * @brief overload the operator '<<' for std::pair
  */
-template<typename Key, typename Val>
+template <typename Key, typename Val>
 std::ostream &operator<<(std::ostream &os, const std::pair<Key, Val> &p) {
   os << "{'" << p.first << "': " << p.second << '}';
   return os;
@@ -592,7 +597,7 @@ std::ostream &operator<<(std::ostream &os, const std::pair<Key, Val> &p) {
 /**
  * @brief output format for container
  */
-template<typename ConType>
+template <typename ConType>
 std::ostream &orderedContainer(std::ostream &os, const ConType &s) {
   os << '[';
   if (s.empty()) {
@@ -609,7 +614,7 @@ std::ostream &orderedContainer(std::ostream &os, const ConType &s) {
 /**
  * @brief output format for unordered container
  */
-template<typename ConType>
+template <typename ConType>
 std::ostream &unorderedContainer(std::ostream &os, const ConType &c) {
   os << '[';
   if (c.empty()) {
@@ -617,7 +622,7 @@ std::ostream &unorderedContainer(std::ostream &os, const ConType &c) {
     return os;
   }
   std::stringstream stream;
-  for (const auto &elem: c)
+  for (const auto &elem : c)
     stream << elem << ns_log::ns_priv::splitor;
   std::string str = stream.str();
   os << std::string_view(str.c_str(),

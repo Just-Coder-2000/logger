@@ -30,6 +30,7 @@ void stdcout() {
   LOG_PLAINTEXT("Hello, world!");
   LOG_ENDL();
   double pi = M_PI;
+  ns_log::ns_priv::stdCoutLogger.setPrecision(10);
   LOG_VAR(m, pi);
 }
 
@@ -60,6 +61,7 @@ void fos() {
   LOG_PLAINTEXT_F(flogger, "Hello, world");
   LOG_ENDL_F(flogger);
   double pi = M_PI;
+  flogger.setPrecision(10);
   LOG_VAR_F(flogger, m, pi);
 }
 
