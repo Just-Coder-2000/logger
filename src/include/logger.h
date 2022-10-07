@@ -566,9 +566,9 @@ namespace ns_log {
 #define _LOG_VAR_10(var, ...) _LOG_VAR_PACK_(var) << _LOG_VAR_9(__VA_ARGS__)
 
 // print variables for debug or something else
-#define LOG_VAR(...)                                                \
-  std::cout << LOG_PREFIX << MACRO_LAUNCHER(_LOG_VAR_, __VA_ARGS__) \
-            << LOG_SUFFIX << std::endl;
+#define LOG_VAR(...)                                                             \
+  std::cout << LOG_PREFIX << "\033[3m" << MACRO_LAUNCHER(_LOG_VAR_, __VA_ARGS__) \
+            << LOG_SUFFIX << "\033[0m" << std::endl;
 
 // print var value to a file
 #define LOG_VAR_F(flogger, ...)                                                \
