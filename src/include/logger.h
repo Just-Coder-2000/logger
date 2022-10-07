@@ -279,6 +279,12 @@ namespace ns_log {
 #define LOG_STYLE_WARNING std::string("\033[93m")
 #define LOG_STYLE_FATAL std::string("\033[95m")
 
+// the prefix used when print variables
+#define LOG_PREFIX "-- "
+
+// the suffix used when print variables
+#define LOG_SUFFIX ""
+
     /**
      * @brief base logger
      */
@@ -314,7 +320,7 @@ namespace ns_log {
       template <typename... ArgsType>
       Logger &plaintext(const ArgsType &...args) {
         std::stringstream stream;
-        Logger::_print_(stream, args...);
+        Logger::_print_(stream, LOG_PREFIX, args...);
         *(this->_loggerOS) << this->getMessage(stream.str(), "");
         return *this;
       }
@@ -530,12 +536,6 @@ namespace ns_log {
   ns_log::ns_priv::stdCoutLogger.fatal(__VA_ARGS__);
 #define LOG_FATAL_F(flogger, ...) \
   flogger.fatal(__VA_ARGS__);
-
-// the prefix used when print variables
-#define LOG_PREFIX "-- "
-
-// the suffix used when print variables
-#define LOG_SUFFIX ""
 
 // a macro launcher
 #define MACRO_SELFT(X) X
