@@ -294,6 +294,7 @@ namespace ns_log {
        * @brief the members
        */
       std::ostream *_loggerOS;
+      int _precision;
 
     public:
       /**
@@ -305,12 +306,14 @@ namespace ns_log {
 
       Logger *setPrecision(int n) {
         (*this->_loggerOS) << std::fixed << std::setprecision(n);
+        _precision = n;
         return this;
       }
 
       template <typename... ArgsType>
       Logger &operator()(const std::string &desc, const std::string &color, const ArgsType &...args) {
         std::stringstream stream;
+        stream << std::fixed << std::setprecision(_precision);
         Logger::_print_(stream, args...);
         *(this->_loggerOS) << this->getMessageHeader(desc, color) << ' '
                            << this->getMessage(stream.str(), color);
@@ -320,6 +323,7 @@ namespace ns_log {
       template <typename... ArgsType>
       Logger &plaintext(const ArgsType &...args) {
         std::stringstream stream;
+        stream << std::fixed << std::setprecision(_precision);
         Logger::_print_(stream, LOG_PREFIX, args...);
         *(this->_loggerOS) << this->getMessage(stream.str(), "");
         return *this;

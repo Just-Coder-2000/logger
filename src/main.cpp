@@ -39,6 +39,7 @@ void fos() {
   m.insert({"cpp", "std11"});
   m.insert({"python", "3.8"});
   ns_log::FileLogger flogger("../log.log");
+  flogger.setPrecision(10);
   flogger.info("this is a 'info' message");
   LOG_INFO_F(flogger, "this is a 'info' message");
   LOG_ENDL_F(flogger);
@@ -61,7 +62,6 @@ void fos() {
   LOG_PLAINTEXT_F(flogger, "Hello, world");
   LOG_ENDL_F(flogger);
   double pi = M_PI;
-  flogger.setPrecision(10);
   LOG_VAR_F(flogger, m, pi);
 }
 
