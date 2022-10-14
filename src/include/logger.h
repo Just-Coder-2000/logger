@@ -300,7 +300,7 @@ namespace ns_log {
       /**
        * @brief construct a new Logger object
        */
-      explicit Logger(std::ostream *os) : _loggerOS(os) {}
+      explicit Logger(std::ostream *os) : _loggerOS(os), _precision(5) {}
 
       virtual ~Logger() = default;
 
