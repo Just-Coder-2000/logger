@@ -448,6 +448,7 @@ namespace ns_log {
     explicit FileLogger(const std::string &filename) : Logger(new std::ofstream(filename, std::ios::out)) {}
 
     ~FileLogger() override {
+      dynamic_cast<std::ofstream *>(this->_loggerOS)->close();
       delete this->_loggerOS;
     }
 
