@@ -4,6 +4,37 @@
 
 #include <cmath>
 
+void stdfout() {
+  ns_log::ns_priv::stdCoutLogger.usingFout("../stdfout.log");
+  std::unordered_map<std::string, std::string> m;
+  m.insert({"cpp", "std11"});
+  m.insert({"python", "3.8"});
+  ns_log::info("this is a 'info' message");
+  LOG_INFO("this is a 'info' message");
+  LOG_ENDL();
+  ns_log::process("we all know that 'pi' equals to ", M_PI);
+  LOG_PROCESS("we all know that 'pi' equals to ", M_PI);
+  LOG_ENDL();
+  ns_log::warning("It's time to eat!");
+  LOG_WARNING("It's time to eat!");
+  LOG_ENDL();
+  ns_log::error("the file hasn't been closed! (", false, ")");
+  LOG_ERROR("the file hasn't been closed! (", false, ")");
+  LOG_ENDL();
+  ns_log::fatal("the vector elems are: ", std::vector<int>{1, 5, 6, 2, 4, 78});
+  LOG_FATAL("the vector elems are: ", std::vector<int>{1, 5, 6, 2, 4, 78});
+  LOG_ENDL();
+  ns_log::info("the standard of the langs are: ", m);
+  LOG_INFO("the standard of the langs are: ", m);
+  LOG_ENDL();
+  ns_log::plaintext("Hello, world!");
+  LOG_PLAINTEXT("Hello, world!");
+  LOG_ENDL();
+  double pi = M_PI;
+  ns_log::ns_priv::stdCoutLogger.setPrecision(10);
+  LOG_VAR(m, pi);
+}
+
 void stdcout() {
   std::unordered_map<std::string, std::string> m;
   m.insert({"cpp", "std11"});
@@ -70,6 +101,9 @@ int main(int argc, char const *argv[]) {
    * @brief std::cout
    */
   ::stdcout();
+
+  
+  ::stdfout();
 
   /**
    * @brief std::ofstream

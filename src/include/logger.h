@@ -295,14 +295,20 @@ namespace ns_log {
        */
       std::ostream *_loggerOS;
       int _precision;
+      bool _isFileOstream;
 
     public:
       /**
        * @brief construct a new Logger object
        */
-      explicit Logger(std::ostream *os) : _loggerOS(os), _precision(5) {}
+      explicit Logger(std::ostream *os, bool isFileOstream)
+          : _loggerOS(os), _precision(5), _isFileOstream(isFileOstream) {}
 
-      virtual ~Logger() = default;
+      virtual ~Logger() {
+        if (_isFileOstream) {
+          delete this->_loggerOS;
+        }
+      }
 
       Logger *setPrecision(int n) {
         (*this->_loggerOS) << std::fixed << std::setprecision(n);
@@ -420,11 +426,35 @@ namespace ns_log {
   class StdLogger : public ns_priv::Logger {
 
   public:
-    explicit StdLogger(std::ostream &os) : Logger(&os) {}
+    explicit StdLogger(std::ostream &os, bool isFileOstream)
+        : Logger(&os, isFileOstream) {}
+
+    void usingCout() {
+      this->_loggerOS = &std::cout;
+      this->_isFileOstream = false;
+    }
+
+    void usingClog() {
+      this->_loggerOS = &std::clog;
+      this->_isFileOstream = false;
+    }
+
+    void usingCerr() {
+      this->_loggerOS = &std::cerr;
+      this->_isFileOstream = false;
+    }
+
+    void usingFout(const std::string &filename) {
+      this->_loggerOS = new std::ofstream(filename, std::ios::out);
+      this->_isFileOstream = true;
+    }
 
     ~StdLogger() override = default;
 
     std::string getMessageHeader(const std::string &desc, const std::string &color) override {
+      if (_isFileOstream) {
+        return '[' + desc + "]-[" + Logger::curTime() + "]";
+      }
 #ifdef __linux__
       auto flag = '[' + LOG_STYLE_BOLD + color + desc + LOG_STYLE_NONE + ']';
       auto tm = '[' + LOG_STYLE_ITALIC + color + Logger::curTime() + LOG_STYLE_NONE + ']';
@@ -435,6 +465,9 @@ namespace ns_log {
     }
 
     std::string getMessage(const std::string &msg, const std::string &color) override {
+      if (_isFileOstream) {
+        return msg;
+      }
 #ifdef __linux__
       return LOG_STYLE_ITALIC + color + msg + LOG_STYLE_NONE;
 #else
@@ -445,12 +478,10 @@ namespace ns_log {
 
   class FileLogger : public ns_priv::Logger {
   public:
-    explicit FileLogger(const std::string &filename) : Logger(new std::ofstream(filename, std::ios::out)) {}
+    explicit FileLogger(const std::string &filename)
+        : Logger(new std::ofstream(filename, std::ios::out), true) {}
 
-    ~FileLogger() override {
-      dynamic_cast<std::ofstream *>(this->_loggerOS)->close();
-      delete this->_loggerOS;
-    }
+    ~FileLogger() override = default;
 
     std::string getMessageHeader(const std::string &desc, const std::string &color) override {
       return '[' + desc + "]-[" + Logger::curTime() + "]";
@@ -479,7 +510,7 @@ namespace ns_log {
      */
     static const std::string splitor(", ");
 
-    static StdLogger stdCoutLogger(std::cout);
+    static StdLogger stdCoutLogger(std::cout, false);
   } // namespace ns_priv
 
   template <typename... ArgsType>
@@ -570,10 +601,20 @@ namespace ns_log {
 #define _LOG_VAR_9(var, ...) _LOG_VAR_PACK_(var) << _LOG_VAR_8(__VA_ARGS__)
 #define _LOG_VAR_10(var, ...) _LOG_VAR_PACK_(var) << _LOG_VAR_9(__VA_ARGS__)
 
-// print variables for debug or something else
-#define LOG_VAR(...)                                                             \
-  std::cout << LOG_PREFIX << "\033[3m" << MACRO_LAUNCHER(_LOG_VAR_, __VA_ARGS__) \
-            << LOG_SUFFIX << "\033[0m" << std::endl;
+  // print variables for debug or something else
+  // #define LOG_VAR(...)                                                       \
+//   *(ns_log::ns_priv::stdCoutLogger._loggerOS)                              \
+//       << "\033[3m" << LOG_PREFIX << MACRO_LAUNCHER(_LOG_VAR_, __VA_ARGS__) \
+//       << LOG_SUFFIX << "\033[0m" << std::endl;
+
+#define LOG_VAR(...)                                                                            \
+  {                                                                                             \
+    std::stringstream __stream__;                                                               \
+    __stream__ << std::fixed << std::setprecision(ns_log::ns_priv::stdCoutLogger._precision);   \
+    __stream__ << LOG_PREFIX << MACRO_LAUNCHER(_LOG_VAR_, __VA_ARGS__) << LOG_SUFFIX;           \
+    *(ns_log::ns_priv::stdCoutLogger._loggerOS)                                                 \
+        << ns_log::ns_priv::stdCoutLogger.getMessage(__stream__.str(), "\033[3m") << std::endl; \
+  }
 
 // print var value to a file
 #define LOG_VAR_F(flogger, ...)                                                \
@@ -581,7 +622,7 @@ namespace ns_log {
                        << LOG_SUFFIX << std::endl;
 
 #define LOG_ENDL() \
-  std::cout << std::endl;
+  *(ns_log::ns_priv::stdCoutLogger._loggerOS) << std::endl;
 
 #define LOG_ENDL_F(flogger) \
   *(flogger._loggerOS) << std::endl;
