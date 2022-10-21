@@ -29,7 +29,7 @@
  * [4] LOG_ERROR   {Error; Errors; Fallacy;}
  * [5] LOG_FATAL   {Fatal; Catastrophic; Destructive; Cause failure}
  *
- * @brief debug macroes
+ * @brief debug macros
  * [1] LOG_VAR print the variables
  * [2] LOG_ENDL print an end line char '\n'
 
@@ -401,7 +401,7 @@ namespace ns_log {
                        .count();
         return std::to_string(sed) + "(S)";
 #else
-        const time_t t = time(NULL);
+        const time_t t = time(nullptr);
         auto time = localtime(&t);
         return std::to_string(time->tm_hour) + ':' +
                std::to_string(time->tm_min) + ':' +
@@ -510,66 +510,66 @@ namespace ns_log {
      */
     static const std::string splitor(", ");
 
-    static StdLogger stdCoutLogger(std::cout, false);
+    static StdLogger stdLogger(std::cout, false);
   } // namespace ns_priv
 
   template <typename... ArgsType>
   static ns_priv::Logger &plaintext(const ArgsType &...args) {
-    return ns_log::ns_priv::stdCoutLogger.plaintext(args...);
+    return ns_log::ns_priv::stdLogger.plaintext(args...);
   }
 
 #define LOG_PLAINTEXT(...) \
-  ns_log::ns_priv::stdCoutLogger.plaintext(__VA_ARGS__);
+  ns_log::ns_priv::stdLogger.plaintext(__VA_ARGS__);
 #define LOG_PLAINTEXT_F(flogger, ...) \
   flogger.plaintext(__VA_ARGS__);
 
   template <typename... ArgsType>
   static ns_priv::Logger &info(const ArgsType &...args) {
-    return ns_log::ns_priv::stdCoutLogger.info(args...);
+    return ns_log::ns_priv::stdLogger.info(args...);
   }
 
 #define LOG_INFO(...) \
-  ns_log::ns_priv::stdCoutLogger.info(__VA_ARGS__);
+  ns_log::ns_priv::stdLogger.info(__VA_ARGS__);
 #define LOG_INFO_F(flogger, ...) \
   flogger.info(__VA_ARGS__);
 
   template <typename... ArgsType>
   static ns_priv::Logger &process(const ArgsType &...args) {
-    return ns_log::ns_priv::stdCoutLogger.process(args...);
+    return ns_log::ns_priv::stdLogger.process(args...);
   }
 
 #define LOG_PROCESS(...) \
-  ns_log::ns_priv::stdCoutLogger.process(__VA_ARGS__);
+  ns_log::ns_priv::stdLogger.process(__VA_ARGS__);
 #define LOG_PROCESS_F(flogger, ...) \
   flogger.process(__VA_ARGS__);
 
   template <typename... ArgsType>
   static ns_priv::Logger &warning(const ArgsType &...args) {
-    return ns_log::ns_priv::stdCoutLogger.warning(args...);
+    return ns_log::ns_priv::stdLogger.warning(args...);
   }
 
 #define LOG_WARNING(...) \
-  ns_log::ns_priv::stdCoutLogger.warning(__VA_ARGS__);
+  ns_log::ns_priv::stdLogger.warning(__VA_ARGS__);
 #define LOG_WARNING_F(flogger, ...) \
   flogger.warning(__VA_ARGS__);
 
   template <typename... ArgsType>
   static ns_priv::Logger &error(const ArgsType &...args) {
-    return ns_log::ns_priv::stdCoutLogger.error(args...);
+    return ns_log::ns_priv::stdLogger.error(args...);
   }
 
 #define LOG_ERROR(...) \
-  ns_log::ns_priv::stdCoutLogger.error(__VA_ARGS__);
+  ns_log::ns_priv::stdLogger.error(__VA_ARGS__);
 #define LOG_ERROR_F(flogger, ...) \
   flogger.error(__VA_ARGS__);
 
   template <typename... ArgsType>
   static ns_priv::Logger &fatal(const ArgsType &...args) {
-    return ns_log::ns_priv::stdCoutLogger.fatal(args...);
+    return ns_log::ns_priv::stdLogger.fatal(args...);
   }
 
 #define LOG_FATAL(...) \
-  ns_log::ns_priv::stdCoutLogger.fatal(__VA_ARGS__);
+  ns_log::ns_priv::stdLogger.fatal(__VA_ARGS__);
 #define LOG_FATAL_F(flogger, ...) \
   flogger.fatal(__VA_ARGS__);
 
@@ -601,19 +601,14 @@ namespace ns_log {
 #define _LOG_VAR_9(var, ...) _LOG_VAR_PACK_(var) << _LOG_VAR_8(__VA_ARGS__)
 #define _LOG_VAR_10(var, ...) _LOG_VAR_PACK_(var) << _LOG_VAR_9(__VA_ARGS__)
 
-  // print variables for debug or something else
-  // #define LOG_VAR(...)                                                       \
-//   *(ns_log::ns_priv::stdCoutLogger._loggerOS)                              \
-//       << "\033[3m" << LOG_PREFIX << MACRO_LAUNCHER(_LOG_VAR_, __VA_ARGS__) \
-//       << LOG_SUFFIX << "\033[0m" << std::endl;
-
+// print variables for debug or something else
 #define LOG_VAR(...)                                                                            \
   {                                                                                             \
     std::stringstream __stream__;                                                               \
-    __stream__ << std::fixed << std::setprecision(ns_log::ns_priv::stdCoutLogger._precision);   \
+    __stream__ << std::fixed << std::setprecision(ns_log::ns_priv::stdLogger._precision);   \
     __stream__ << LOG_PREFIX << MACRO_LAUNCHER(_LOG_VAR_, __VA_ARGS__) << LOG_SUFFIX;           \
-    *(ns_log::ns_priv::stdCoutLogger._loggerOS)                                                 \
-        << ns_log::ns_priv::stdCoutLogger.getMessage(__stream__.str(), "\033[3m") << std::endl; \
+    *(ns_log::ns_priv::stdLogger._loggerOS)                                                 \
+        << ns_log::ns_priv::stdLogger.getMessage(__stream__.str(), "\033[3m") << std::endl; \
   }
 
 // print var value to a file
@@ -622,7 +617,7 @@ namespace ns_log {
                        << LOG_SUFFIX << std::endl;
 
 #define LOG_ENDL() \
-  *(ns_log::ns_priv::stdCoutLogger._loggerOS) << std::endl;
+  *(ns_log::ns_priv::stdLogger._loggerOS) << std::endl;
 
 #define LOG_ENDL_F(flogger) \
   *(flogger._loggerOS) << std::endl;

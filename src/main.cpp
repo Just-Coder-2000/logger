@@ -5,7 +5,7 @@
 #include <cmath>
 
 void stdfout() {
-  ns_log::ns_priv::stdCoutLogger.usingFout("../stdfout.log");
+  ns_log::ns_priv::stdLogger.usingFout("../stdfout.log");
   std::unordered_map<std::string, std::string> m;
   m.insert({"cpp", "std11"});
   m.insert({"python", "3.8"});
@@ -31,7 +31,7 @@ void stdfout() {
   LOG_PLAINTEXT("Hello, world!");
   LOG_ENDL();
   double pi = M_PI;
-  ns_log::ns_priv::stdCoutLogger.setPrecision(10);
+  ns_log::ns_priv::stdLogger.setPrecision(10);
   LOG_VAR(m, pi);
 }
 
@@ -61,7 +61,7 @@ void stdcout() {
   LOG_PLAINTEXT("Hello, world!");
   LOG_ENDL();
   double pi = M_PI;
-  ns_log::ns_priv::stdCoutLogger.setPrecision(10);
+  ns_log::ns_priv::stdLogger.setPrecision(10);
   LOG_VAR(m, pi);
 }
 
