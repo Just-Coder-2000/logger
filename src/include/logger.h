@@ -44,6 +44,16 @@
  * [2] FORMAT_TIME_STAMP time stamp since epoch
  */
 
+namespace ns_log {
+  namespace ns_priv {
+    /**
+     * @brief params to control
+     * @param _splitor_ the splitor to split the elements
+     */
+    static const std::string splitor(", ");
+  } // namespace ns_priv
+}
+
 #pragma region output for container declare
 
 /**
@@ -502,14 +512,6 @@ namespace ns_log {
 #undef LOG_STYLE_FATAL
 
   namespace ns_priv {
-    /**
-     * @brief params to control
-     * @param _splitor_ the splitor to split the elements
-     * @param _firName_ the describe name for the first element of the std::pair
-     * @param _sedName_ the describe name for the second element of the std::pair
-     */
-    static const std::string splitor(", ");
-
     static StdLogger stdLogger(std::cout, false);
   } // namespace ns_priv
 
@@ -588,7 +590,7 @@ namespace ns_log {
 
 // a helper
 #define _LOG_VAR_PACK_(var) \
-#var << ": " << var << ", "
+  #var << ": " << var << ", "
 
 #define _LOG_VAR_1(var) #var << ": " << var
 #define _LOG_VAR_2(var, ...) _LOG_VAR_PACK_(var) << _LOG_VAR_1(__VA_ARGS__)
@@ -602,11 +604,11 @@ namespace ns_log {
 #define _LOG_VAR_10(var, ...) _LOG_VAR_PACK_(var) << _LOG_VAR_9(__VA_ARGS__)
 
 // print variables for debug or something else
-#define LOG_VAR(...)                                                                            \
-  {                                                                                             \
-    std::stringstream __stream__;                                                               \
+#define LOG_VAR(...)                                                                        \
+  {                                                                                         \
+    std::stringstream __stream__;                                                           \
     __stream__ << std::fixed << std::setprecision(ns_log::ns_priv::stdLogger._precision);   \
-    __stream__ << LOG_PREFIX << MACRO_LAUNCHER(_LOG_VAR_, __VA_ARGS__) << LOG_SUFFIX;           \
+    __stream__ << LOG_PREFIX << MACRO_LAUNCHER(_LOG_VAR_, __VA_ARGS__) << LOG_SUFFIX;       \
     *(ns_log::ns_priv::stdLogger._loggerOS)                                                 \
         << ns_log::ns_priv::stdLogger.getMessage(__stream__.str(), "\033[3m") << std::endl; \
   }
